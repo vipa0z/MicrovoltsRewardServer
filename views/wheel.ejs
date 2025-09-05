@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            margin: 0 auto;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 15px solid #333;
+            box-shadow: 0 0 0 5px #333, 0 0 0 15px #fff, 0 0 0 18px #333;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            transform: rotate(0deg);
+        }
+
+        .wheel-item {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            left: 0;
+            top: 0;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transform: rotate(45deg) skew(0deg);
+        }
+
+        .wheel-item-content {
+            transform: skew(0deg) rotate(45deg);
+            width: 100%;
+            text-align: center;
+        }
+
+        .wheel-item h3 {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .wheel-item img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 5px;
+        }
+
+        .spin-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+
+        .spin-button:hover {
+            background: #c0392b;
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .spin-button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 30px solid #e74c3c;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <div class="wheel-container">
+        <div class="wheel" id="wheel">
+            <% const totalItems = wheelItems.length; %>
+            <% const angle = 360 / totalItems; %>
+            <% wheelItems.forEach((item, index) => { 
+                const rotation = angle * index;
+                const color = `hsl(${index * (360 / totalItems)}, 70%, 60%)`;
+            %>
+                <div class="wheel-item" 
+                     style="transform: rotate(<%= rotation %>deg) skew(<%= 90 - angle %>deg);
+                            background: <%= color %>;">
+                    <div class="wheel-item-content">
+                        <% if (Array.isArray(item.itemId)) { %>
+                            <img src="/assets/icons/package.png" alt="Package">
+                        <% } else { %>
+                            <img src="/assets/icons/<%= item.itemId %>.png" alt="<%= item.ii_name %>">
+                        <% } %>
+                        <h3><%= item.ii_name %></h3>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+        <div class="pointer"></div>
+        <button class="spin-button" id="spinButton">SPIN</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const wheel = document.getElementById('wheel');
+            const spinButton = document.getElementById('spinButton');
+            let isSpinning = false;
+            let currentRotation = 0;
+            console.log(wheelItems);
+            spinButton.addEventListener('click', () => {
+                if (isSpinning) return;
+                
+                isSpinning = true;
+                spinButton.disabled = true;
+                
+                // Random rotation between 2-5 full rotations plus a random segment
+                const spinDegrees = 1080 + Math.floor(Math.random() * 360) + 1800;
+                currentRotation += spinDegrees;
+                
+                wheel.style.transform = `rotate(${-currentRotation}deg)`;
+                
+                // Enable button after spin completes
+                setTimeout(() => {
+                    isSpinning = false;
+                    spinButton.disabled = false;
+                    
+                    // Calculate which segment is selected
+                    const segmentAngle = 360 / <%= wheelItems.length %>;
+                    const normalizedRotation = ((currentRotation % 360) + 360) % 360;
+                    const selectedIndex = Math.floor(normalizedRotation / segmentAngle);
+                    const selectedItem = <%= JSON.stringify(wheelItems) %>[selectedIndex];
+                    
+                    alert(`You won: ${selectedItem.ii_name}!`);
+                }, 5000); // Match this with CSS transition duration
+            });
+        });
+    </script>
+</body>
+</html>

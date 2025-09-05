@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <title><%= title %></title>
+    <meta name="description" content="<%= description %>">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= `http://localhost:3000${req.originalUrl}` %>">
+    <meta property="og:title" content="<%= title %>">
+    <meta property="og:description" content="<%= description %>">
+    <meta property="og:image" content="<%= ogImage %>">
+    <meta property="og:image:alt" content="ToyBattles Game Screenshot">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@ToyBattlesGame">
+    <meta name="twitter:creator" content="@ToyBattlesGame">
+    <meta name="twitter:title" content="<%= title %>">
+    <meta name="twitter:description" content="<%= description %>">
+    <meta name="twitter:image" content="<%= ogImage %>">
+    <meta name="twitter:image:alt" content="ToyBattles Game Screenshot">
+    
+    <!-- Icons -->
+    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
+    
+    <!-- Theme -->
+    <meta name="theme-color" content="<%= themeColor %>" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#CC0044" media="(prefers-color-scheme: dark)">
+    <meta name="msapplication-TileColor" content="<%= themeColor %>">
+    <meta name="color-scheme" content="light dark">
+    
+    <!-- Styles -->
+    <link rel="preload" href="/fonts/game-font.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+    <link href="/css/main.css" rel="stylesheet">
+</head>
+<body>
+    <!-- No JavaScript warning -->
+    <noscript>
+        <div class="noscript-warning">
+            <h1>ToyBattles requires JavaScript</h1>
+            <p>Please enable JavaScript in your browser to play the game.</p>
+            <p>Alternatively, visit our <a href="/javascript-help">support page</a> for help.</p>
+        </div>
+    </noscript>
+    
+    <!-- Main game container -->
+    <div id="root" role="main">
+        <!-- Your game content goes here -->
+        <div class="game-container">
+            <h1>Welcome to ToyBattles!</h1>
+            <p>Game loading...</p>
+            <div id="game-canvas"></div>
+        </div>
+    </div>
+    
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "ToyBattles",
+        "url": "http://localhost:3000",
+        "description": "<%= description %>",
+        "genre": ["Shooter", "Action", "Multiplayer"],
+        "gamePlatform": "Web Browser",
+        "applicationCategory": "Game",
+        "operatingSystem": "Windows, macOS, Linux",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "ToyBattles Team"
+        }
+    }
+    </script>
+    
+    <!-- Game Scripts -->
+    <script src="/js/game.js"></script>
+</body>
+</html>

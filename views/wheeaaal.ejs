@@ -1,0 +1,36 @@
+<%- include('partials/head', { title: 'OVERVOLT: REFERRAL WHEEL' }) %>
+<body>
+    <div class="printer">
+        <div class="email-form">
+            <h2>Send link</h2>
+            <form action="/send-email" method="post">
+                <input type="email" name="email" placeholder="Enter your friend's email" required>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="wheel-container">
+        <% wheelItems.forEach(item => { %>
+            <div class="wheel-item">
+                <% if (Array.isArray(item.itemId)) { %>
+                    <!-- Show package icon -->
+                    <div class="package-icon">
+                        <img src="/assets/icons/package.png" alt="Package Icon">
+                    </div>
+                <% } else { %>
+                    <!-- Show individual item icon -->
+                    <div class="icon">
+                        <img src="/assets/icons/<%= item.itemId %>.png" alt="<%= item.ii_name %>">
+                    </div>
+                <% } %>
+
+                <div class="wheel-item-content">
+                    <h3><%= item.ii_name %></h3>
+                    <p>Option: <%= item.ii_option %></p>
+                </div>
+            </div>
+        <% }) %>
+
+    </div>
+</body>
