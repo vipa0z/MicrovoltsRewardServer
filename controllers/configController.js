@@ -16,6 +16,15 @@ exports.configureItems = function (category) {
                     error: `Missing request body. Send JSON (Content-Type: application/json) as either { "${configMeta.key}": [...] } or a top-level array of items.`
                 });
             }
+            if (configMeta.key == 'shop_items') {
+                for (const item of req.body.shop_items) {
+                    if (item.price === undefined) {
+                        return res.status(400).json({
+                            error: `Missing required field(s): price`
+                        });
+                    }
+                }
+            }
 
             let items = undefined;
             if (Array.isArray(req.body)) {

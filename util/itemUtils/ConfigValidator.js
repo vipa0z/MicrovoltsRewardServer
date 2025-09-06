@@ -133,7 +133,7 @@ async function validateConfigFileOnStartup(category) {
 
         items = items.map(item => Array.isArray(item) ? item[0] : item);
         for (const item of items) {
-            const structureCheck = validateItemStructure(item);
+            const structureCheck = validateItemStructure(item,category);
             if (!structureCheck.valid) {
                 logger.error(`[!] Field validation failed for an item in ${config.filename}: ${structureCheck.error}, \n[!] exiting....`);
                 process.exit(1);
@@ -243,15 +243,24 @@ async function validateAchievementsOnStartup() {
     }
 }
 
-function validateItemStructure(entry) {
-    const requiredFields = ['itemId', 'itemName', 'itemOption'];
-    const entryKeys = Object.keys(entry);
+function validateItemStructure(entry, category) {
+    let requiredFields = ['itemId', 'itemName', 'itemOption'];
 
+    // shop items must include a price
+    if (category === 'shop_items') {
+        requiredFields.push('price');
+    }
+
+    const entryKeys = Object.keys(entry);
     const missing = requiredFields.filter(field => !(field in entry));
-    if (missing.length > 0) return { valid: false, error: `Missing required field(s): ${missing.join(', ')}` };
+    if (missing.length > 0) {
+        return { valid: false, error: `Missing required field(s): ${missing.join(', ')}` };
+    }
 
     const unknown = entryKeys.filter(key => !requiredFields.includes(key));
-    if (unknown.length > 0) return { valid: false, error: `Unknown field(s): ${unknown.join(', ')}` };
+    if (unknown.length > 0) {
+        return { valid: false, error: `Unknown field(s): ${unknown.join(', ')}` };
+    }
 
     const itemId = entry.itemId;
     if (
@@ -259,13 +268,24 @@ function validateItemStructure(entry) {
             (typeof itemId === 'number' && Number.isInteger(itemId)) ||
             (Array.isArray(itemId) && itemId.every(id => typeof id === 'number' && Number.isInteger(id)))
         )
-    ) return { valid: false, error: `Invalid itemId: must be an integer or array of integers.` };
+    ) {
+        return { valid: false, error: `Invalid itemId: must be an integer or array of integers.` };
+    }
 
-    if (typeof entry.itemName !== 'string') return { valid: false, error: `Invalid itemName: must be a string.` };
-    if (typeof entry.itemOption !== 'string') return { valid: false, error: `Invalid itemOption: must be a string.` };
+    if (typeof entry.itemName !== 'string') {
+        return { valid: false, error: `Invalid itemName: must be a string.` };
+    }
+    if (typeof entry.itemOption !== 'string') {
+        return { valid: false, error: `Invalid itemOption: must be a string.` };
+    }
+
+    if (category === 'shop_items' && typeof entry.price !== 'number') {
+        return { valid: false, error: `Invalid price: must be a number.` };
+    }
 
     return { valid: true };
 }
+
 
 module.exports = {
     validateItems,

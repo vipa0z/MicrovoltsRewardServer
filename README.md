@@ -16,7 +16,7 @@ I’m also juggling some OffSec studies at the moment, so updates might come a b
 
 - **Referral Wheel** (✅ Implemented)
 - **Achievements** (✅ Implemented)
-- **Event Shop** (🔜 Planned)
+- **Event Shop** (✅ Implemented)
 - **Hourly Play Time Rewards** (🔜 Planned)
 - **GUI** (🔜 Planned)
 

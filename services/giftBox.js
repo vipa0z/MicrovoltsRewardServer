@@ -12,15 +12,14 @@ class GiftBox {
         this.emuApiUrl = process.env.EMU_API_URL;
     }
 
-     static async sendReward(reward,playerId, playerNickname, message,sender) {
+     static async sendReward(reward,playerId, playerNickname, message, sender) {
       const giftBox = new GiftBox(playerNickname, playerId);
       try {
           const result = await giftBox.sendMultipleRewardsToPlayerGiftBoxApi(
               reward.itemId,
               playerNickname,
-              sender,
               message,
-
+              sender,
           );
           if (result.some(r => !r.success)) {
             console.log('failed to send rewards via API, Inserting directly to DB...')

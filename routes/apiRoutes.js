@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const configController = require("../controllers/configController")
 const wheelController = require('../controllers/referal_wheel');
+const shopController = require('../controllers/event_shop');
 const authController = require("../controllers/authController")
 const { authUser, authAdmin } = require('../middlewares/auth');
 const achievements = require('../controllers/achievements');
@@ -20,6 +21,9 @@ router.post('/config/achievements', authAdmin, configController.configureItems('
 router.get('/wheel/items', authUser, wheelController.getWheelItems);
 router.post('/wheel/draw', authUser, wheelController.drawWheel);
 
+// shop
+router.get('/shop/items', authUser, shopController.getEventShop);
+router.post('/shop/buy', authUser, shopController.purchaseEventItem);
 
 //achievements
  

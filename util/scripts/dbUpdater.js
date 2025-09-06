@@ -3,7 +3,6 @@ const db = require('../db');
 const crypto = require('crypto');
 const chalk = require('chalk');
 
-// Helper: validate username policy (alphanumeric, >= 3 chars)
 function isValidUsername(name) {
   if (typeof name !== 'string') return false;
   const trimmed = name.trim();
@@ -11,7 +10,7 @@ function isValidUsername(name) {
   return /^[A-Za-z0-9]+$/.test(trimmed);
 }
 
-// Helper: validate password policy
+//  validate password policy
 function isValidPassword(pw) {
   if (typeof pw !== 'string') return false;
   if (pw.length < 6) return false;
@@ -35,24 +34,27 @@ async function ensureRewardFieldsExist() {
 
   if (!existing.includes('WheelSpinsClaimed')) {
     toAdd.push(`ADD COLUMN WheelSpinsClaimed INT DEFAULT 0`);
-    console.log('added wheel data 1.');
+    console.log('added wheel column 1.');
   }
-
-  if (!existing.includes('dailyPlayTime')) {
-    toAdd.push(`ADD COLUMN dailyPlayTime INT DEFAULT 0`);
-    console.log('added playtime data 1.');
-  }
-
   if (!existing.includes('dailySpinsClaimed')) {
     toAdd.push(`ADD COLUMN dailySpinsClaimed INT DEFAULT 0`);
-    console.log('added daily data 1.');
+    console.log('added daily column 1.');
   }
-
+  if (!existing.includes('dailyPlayTime')) {
+    toAdd.push(`ADD COLUMN dailyPlayTime INT DEFAULT 0`);
+    console.log('added playtime column 1.');
+  }
+  if (!existing.includes('EventCurrency')) {
+    toAdd.push(`ADD COLUMN EventCurrency INT DEFAULT 0`);
+    console.log('added event currency column 1.');
+  }
   if (toAdd.length > 0) {
     const query = `ALTER TABLE users ${toAdd.join(', ')}`;
     await db.query(query);
     logger.info('[+] Added missing reward columns:', toAdd);
   }
+
+
 }
 
 async function ensurePlayerAchievementsTable() {
@@ -130,7 +132,7 @@ exports.run = async function run() {
       }
       await ensureAdminUser(username, adminPass);
     }
-    logger.info('Database update script finished successfully.');
+    logger.info('columnbase update script finished successfully.');
     process.exit(0);
   } catch (err) {
     logger.error('Error running db updater:', err);

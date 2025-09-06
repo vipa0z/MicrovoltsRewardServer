@@ -1,31 +1,22 @@
 {
     "shop_items": [
         {
+            "itemName": "Anesidora Set",
+            "itemOption": "Speed +20",
+            "price": 90,
             "itemId": [
                 1110110,
                 1110240
-            ],
-            "itemName": "Anesidora Set",
-            "itemOption": "Speed"
+            ]
         },
         {
-            "itemId": 1110340,
-            "itemName": "Anesidora Set",
-            "itemOption": "Speed"
-        },
-        {
+            "itemName": "ARMOR OF FAITH",
+            "itemOption": "Speed +20",
+            "price": 90,
             "itemId": [
-                1110110,
-                1110240,
-                1110151
-            ],
-            "itemName": "set 3",
-            "itemOption": "Speed"
-        },
-        {
-            "itemId": 1110340,
-            "itemName": "Anesidora Set",
-            "itemOption": "Speed"
+                1110110
+            ]
         }
+
     ]
 }

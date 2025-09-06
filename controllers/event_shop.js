@@ -1,22 +1,15 @@
-const ShopService = require('../services/ShopService');
-const logger = require('../util/logger');
+const EventShop  = require('../services/EventShop');
+const {logger} = require('../util/logger');
 
 exports.getEventShop = async (req, res) => { 
-    const playerId = req.user.playerId;
+    const playerId = req.user.id;
     if (!playerId) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
     try {
-
-        // Get shop items from memory
-        const shopItems = ShopService.shopItems.map(item => ({
-            itemId: item.ii_id,
-            name: item.ii_name,
-            iconId: item.ii_icon_id,
-            price: item.price,
-        }));
-
+        const shop = new EventShop(playerId);
+        const shopItems = await shop.getShopItems();
         res.status(200).json({
             success: true,
             message: "Shop items loaded successfully",
@@ -24,27 +17,27 @@ exports.getEventShop = async (req, res) => {
         });
              
     } catch (error) {
-        logger.error(`Error getting shop items: ${error.message}`);
+        console.log(`Error getting shop items: ${error.message}`);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
 
-exports.postEventShop = async (req, res) => {
-    const playerId = req.user.playerId;
-    const itemId = req.body.itemId;
-// add support for multiple items (buying sets)
+exports.purchaseEventItem = async (req, res) => {
+    const playerId = req.user.id;
+    const itemName = req.body.itemName;
+    const playerNickname = req.user.nickname;
     
     if (!playerId) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
     
-    if (!itemId) {
-        return res.status(400).json({ error: 'Item ID is required' });
+    if (!itemName) {
+        return res.status(400).json({ error: 'Item Name is required' });
     }
     
     try {
-        const shop = new ShopService(playerId);
-        const result = await shop.buyItem(itemId);
+        const shop = new EventShop(playerId,playerNickname);
+        const result = await shop.buyItem(itemName);
         if (result.success) {
             res.status(200).json({
                 success: true,
