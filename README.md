@@ -2,9 +2,6 @@
 
 A recreation of the Previous Microvolts reward systems that restores the functionality of servers like Microvolts Surge and Toyheroes Offline. 
 
-## Compatibility
--  This server is not Currently plug-and-play. While it can be tested with tools like Postman, it requires a frontend for proper use.    
--  The server uses API requests to the [MicrovoltsEmulator](https://github.com/SoWeBegin/MicrovoltsEmulator) emulator for rewards. 
 
 ## Development Status
 
@@ -21,3 +18,7 @@ I’m also juggling some OffSec studies at the moment, so updates might come a b
 - **GUI** (🔜 Planned)
 
 Documentation will be provided in a /docs directory once it is ready.
+
+## Compatibility
+- The server is not plug and play yet but can be tested with tools like Postman.
+- uses API requests to the [MicrovoltsEmulator](https://github.com/SoWeBegin/MicrovoltsEmulator)  for rewards. 
