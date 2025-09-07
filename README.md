@@ -2,22 +2,24 @@
 
 A recreation of the Previous Microvolts reward systems that restores the functionality of servers like Microvolts Surge and Toyheroes Offline. 
 
-## Compatibility
--  This server is not plug-and-play. While it can be tested with tools like Postman, it requires a frontend for proper use.    
--  The server uses API requests to the [MicrovoltsEmulator](https://github.com/SoWeBegin/MicrovoltsEmulator) emulator for rewards. 
-
-## Development Status
-
-This project is currently under active development. the Referral Wheel, and Achievement System are implemented and functional.
-
-I’m also juggling some OffSec studies at the moment, so updates might come a bit slower or in bursts. Appreciate your patience!
-
 ## Progress
 
 - **Referral Wheel** (✅ Implemented)
 - **Achievements** (✅ Implemented)
 - **Event Shop** (✅ Implemented)
-- **Hourly Play Time Rewards** (🔜 Planned)
+- **Rewards per Hours Played** (🔜 Planned)
 - **GUI** (🔜 Planned)
 
+## Development Status
+
+This project is currently under active development. the Referral Wheel, and Achievement System are implemented and functional.
+
+I’m balancing some studies at the moment, so updates might be a bit slow. Thanks for understanding!
+
+
+## Compatibility
+- The server is not plug and play yet but can be tested with tools like Postman.
+- uses API requests to the [MicrovoltsEmulator](https://github.com/SoWeBegin/MicrovoltsEmulator)  for rewards. 
+
+## Documentation
 Documentation will be provided in a /docs directory once it is ready.
