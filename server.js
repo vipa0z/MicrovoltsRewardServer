@@ -3,12 +3,10 @@ const path = require("path")
 const { logger } = require("./util/logger")
 const express = require('express');
 const cors = require('cors');
-const db = require('./util/db')
 const chalk = require('chalk');
-const ConfigValidator = require('./util/itemUtils/ConfigValidator')
-const MemoryLoader = require('./util/itemUtils/MemoryLoader');
-
-
+const ConfigValidator = require('./util/ConfigValidator')
+const db = require('./database/connection')
+const MemoryLoader = require('./util/MemoryLoader');
 
 // Import routes
 const apiRoutes = require('./routes/apiRoutes');
@@ -126,7 +124,7 @@ async function startServer() {
 
 
         // 4. Validate and load config files
-        const categories = ["wheel_items", "shop_items", "hourly_items", "achievements_data"];
+        const categories = ["wheel_items_data", "shop_items_data", "hourly_items", "achievements_data"];
         for (const category of categories) {
             if (!skipValidation) {
                 await ConfigValidator.validateConfigFileOnStartup(category);

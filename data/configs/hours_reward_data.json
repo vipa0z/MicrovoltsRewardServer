@@ -1,0 +1,26 @@
+{
+    "hours_reward_data": [
+      {
+        "itemName": "Anesidora Set",
+        "itemOption": "Speed",
+        "itemId": [
+          1132100,
+          1110151
+        ],
+        "dropRate": 0.05
+      },
+      {
+        "itemName": "Golden Gun",
+        "itemOption": "Damage",
+        "itemId": [1140001],
+        "dropRate": 0.01
+      },
+      {
+        "itemName": "Health Potion",
+        "itemOption": "HP",
+        "itemId": [1201001],
+        "dropRate": 0.5
+      }
+    ]
+  }
+  

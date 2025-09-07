@@ -1,7 +1,7 @@
-const GiftBox = require('./GiftBox');
-const db = require('../util/db');
-const Player = require('./Player');
-const MemoryLoader = require('../util/itemUtils/MemoryLoader');
+const GiftBox = require('./GiftBoxService');
+const db = require('../database/connection');
+const Player = require('../database/Player');
+const MemoryLoader = require('../util/MemoryLoader');
 const { logger } = require('../util/logger');
 
 class SpinningWheel {
@@ -12,32 +12,30 @@ class SpinningWheel {
        this.playerNickName = playerNickName
     }
 
-    // checks the players eligibility for a spin
     async checkEligibility() {
         const player = await Player.getPlayerById(this.playerId);
-        // console.log("[DEBUG] Player row:", player);
         if (!player) {
             throw new Error(`Player not found for AccountID=${this.playerId}`);
         }
         
 
         // Calculate total eligible spins based on playtime, returns a canSpin boolean with either 0/1
+
         // playtime needed in seconds = 160 * 3600 = 576,000
         // if playtime / time needed = int -> reward with spin
         // 160/160 = 1, 320/160 = 2, 480/160 = 3...
         const totalEligibleSpins = Math.floor(player.playtime / this.requiredPlaytimeInSeconds);
-        // Calculate available spins (eligible minus already claimed)
         const availableSpins = Math.max(0, totalEligibleSpins - player.wheelSpinsClaimed);
 
         let hoursUntilNextSpin = 0;
         if (availableSpins === 0) {
-            // Player has claimed all available spins, calculate time until next threshold
+            // calculate time until next threshold
             const nextThresholdPlaytime = this.requiredPlaytimeInSeconds * (player.wheelSpinsClaimed + 1);
             const playtimeNeeded = nextThresholdPlaytime - player.playtime;
             hoursUntilNextSpin = Math.max(0, Math.ceil(playtimeNeeded / 3600));
         }
         return {
-            canSpin: availableSpins > 0,  // if 0, player can't spin if 1, player can spin :O
+            canSpin: availableSpins > 0,
             remainingSpins: availableSpins,
             hoursUntilNextSpin: hoursUntilNextSpin,
             totalEligibleSpins: totalEligibleSpins,
@@ -60,13 +58,11 @@ class SpinningWheel {
     }
 
     drawWheel() {
-        // Get wheel items from memory
-        const items = MemoryLoader.getItems('wheel_items');
+        const items = MemoryLoader.getItems('wheel_items_data');
         if (!items || items.length === 0) {
             throw new Error("No wheel items configured");
         }
-
-        // Select a random item from the wheel items
+        // randomizer
         const reward = items[Math.floor(Math.random() * items.length)];
         return reward;
     }
@@ -75,7 +71,7 @@ class SpinningWheel {
     async spin() {
         let eligibility = {}
         try {
-            // if environment is development, give unlimited spins(for testing)
+            // if environment is development, give unlimited spins
             if (process.env.ENVIRONMENT == 'development') {
               eligibility = {canSpin: true, remainingSpins: 5, hoursUntilNextSpin: 0, totalEligibleSpins: 1, claimedSpins: 0} // gives you unlimited spins(for testing)
             }

@@ -1,4 +1,4 @@
-const {logger} = require('../logger');
+const {logger} = require('./logger');
 const db = require('../db');
 const crypto = require('crypto');
 const chalk = require('chalk');

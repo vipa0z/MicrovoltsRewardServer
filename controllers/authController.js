@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv").config();
 const crypto = require('crypto');
-const Player = require('../services/Player');
+const Player = require('../database/Player');
 
 // Simple validation: allow only letters and digits for Username (no underscores or specials)
 // If you prefer a library, consider `validator` (e.g., validator.isAlphanumeric)

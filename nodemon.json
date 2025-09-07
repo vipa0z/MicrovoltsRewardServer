@@ -1,4 +1,6 @@
 {
-    "watch": ["controllers", "services", "routes", "util"],
-    "ignore": ["configs/*"]
-  }
+  "watch": ["controllers", "services", "routes", "util", "middlewares", "server"],
+  "ignore": ["node_modules", "data/**", "coverage", "tests"],
+  "ext": "js,json",
+  "exec": "node server.js"
+}

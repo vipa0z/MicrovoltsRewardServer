@@ -1,8 +1,9 @@
-const CATEGORY_CONFIGS = require('../util/itemUtils/categoryConfigs').CATEGORY_CONFIGS;
-const MemoryLoader = require('../util/itemUtils/MemoryLoader');
+const CATEGORY_CONFIGS = require('../data/categoryMappings').CATEGORY_CONFIGS;
+const MemoryLoader = require('../util/MemoryLoader');
 const {logger} = require('../util/logger');
 const fs = require('fs').promises
 const path = require('path')
+// TO DO: DEFAULT TO 30 PRICE IF NOT SPECIFIED
 exports.configureItems = function (category) {
     return async (req, res) => {
         try {
@@ -16,8 +17,8 @@ exports.configureItems = function (category) {
                     error: `Missing request body. Send JSON (Content-Type: application/json) as either { "${configMeta.key}": [...] } or a top-level array of items.`
                 });
             }
-            if (configMeta.key == 'shop_items') {
-                for (const item of req.body.shop_items) {
+            if (configMeta.key == 'shop_items_data') {
+                for (const item of req.body.shop_items_data) {
                     if (item.price === undefined) {
                         return res.status(400).json({
                             error: `Missing required field(s): price`
@@ -101,11 +102,8 @@ exports.configureItems = function (category) {
                 });
             }
             
-            const existingItems = configData; // already the array
+            const existingItems = configData; 
             
-// Track existing itemIds
-
-// Track seen items across existing config and new request
 const seen = new Set(
     configData.map(i => JSON.stringify(i)) // add existing items to "seen"
 );
@@ -117,16 +115,7 @@ const uniqueNewItems = cleanedItems.filter(i => {
     return true;
 });
 
-;// .filter(i => {
-//     const idSet = i.itemId;
-//     const isDuplicate = idSet.some(id => existingIds.has(id));
-//     if (isDuplicate) return false;
 
-//     idSet.forEach(id => existingIds.add(id));
-//     return true;
-// });
-
-// If nothing new, stop
 if (uniqueNewItems.length === 0) {
     return res.status(400).json({
         success: false,
@@ -134,11 +123,9 @@ if (uniqueNewItems.length === 0) {
     });
 }
 
-// Save only new ones
-
 configData.push(...uniqueNewItems);
 
-const configPath = path.join(__dirname, "..", "configs", configMeta.filename); // use filename from CATEGORY_CONFIGS
+const configPath = path.join(__dirname, "..", "configs", configMeta.filename); 
 await fs.writeFile(
     configPath,
     JSON.stringify({ [configMeta.key]: configData }, null, 4),

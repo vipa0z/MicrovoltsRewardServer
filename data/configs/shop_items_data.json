@@ -1,0 +1,22 @@
+{
+    "shop_items_data": [
+        {
+            "itemName": "Anesidora Set",
+            "itemOption": "Speed +20",
+            "price": 90,
+            "itemId": [
+                1110110,
+                1110240
+            ]
+        },
+        {
+            "itemName": "ARMOR OF FAITH",
+            "itemOption": "Speed +20",
+            "price": 90,
+            "itemId": [
+                1110110
+            ]
+        }
+
+    ]
+}

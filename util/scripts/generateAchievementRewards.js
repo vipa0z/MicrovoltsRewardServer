@@ -129,5 +129,5 @@ const levelAchievements = levels.map(level => {
 // 2️⃣ (Keep your Weapon achievements as is for now)
 // -----------------------------
 
-fs.writeFileSync("configs/achievements_data.json", JSON.stringify({ achievements: levelAchievements }, null, 2));
-console.log("✅ achievements.json generated successfully (with real itemIds)!");
+fs.writeFileSync("configs/data/achievements_data.json", JSON.stringify({ achievements: levelAchievements }, null, 2));
+console.log("✅ achievements.json generated successfully!");
