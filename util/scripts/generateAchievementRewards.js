@@ -1,13 +1,10 @@
-
 const fs = require("fs");
-const path = require("path");
 
 // -----------------------------
 // 1️⃣ Level Achievements Setup
 // -----------------------------
 const levels = Array.from({ length: 95 }, (_, i) => i + 10);
 
-// ✅ Real MP items (from your item dump)
 const mpItems = {
   100: 4600001,
   500: 4600005,
@@ -43,7 +40,7 @@ levels.forEach(level => {
   mpMap[level] = level * 1000; // e.g. Lvl 10 = 10,000 MP
 });
 
-// Battery quantity logic
+// Battery quantity logic for levels
 function getLevelBattery(level) {
   if ([20, 30, 40, 50, 60, 70, 80, 90, 100].includes(level)) return 10;
   if (level >= 10 && level <= 19) return 5;
@@ -67,7 +64,8 @@ const specialItems = {
     { itemId: 4382950, itemName: "Golden Wreath Crown" },
     { itemId: 5336562, itemName: "Coupon Box" },
     { itemId: 4308103, itemName: "10 Coins" }],
-  80: [{ itemId: 9999000, itemName: "Silver Death Scythe" }],
+  // 80: [{ itemId: 9999000, itemName: "Silver Death Scythe" }],
+
 };
 
 // Coin + coupon ranges
@@ -88,7 +86,7 @@ const coinCouponItems = [
 const levelAchievements = levels.map(level => {
   const rewards = [];
 
-  // MP lookup 
+  // ✅ MP (lookup real itemId)
   const mpValue = mpMap[level];
   const mpItemId = mpItems[mpValue];
   if (mpItemId) {
@@ -99,18 +97,18 @@ const levelAchievements = levels.map(level => {
     });
   }
 
-  // Battery
+  // ✅ Battery
   const batteryQty = getLevelBattery(level);
   if (batteryQty > 0) {
     rewards.push({ ...batteryItem, quantity: batteryQty });
   }
 
-  // Special items
+  // ✅ Special items
   if (specialItems[level]) {
     specialItems[level].forEach(item => rewards.push({ ...item, quantity: 1 }));
   }
 
-  // Coin + coupons
+  // ✅ Coin + coupons
   coinCouponLevels.forEach(range => {
     if (level >= range.start && level <= range.end) {
       coinCouponItems.forEach(item => rewards.push({ ...item, quantity: 1 }));
@@ -126,9 +124,6 @@ const levelAchievements = levels.map(level => {
   };
 });
 
-// -----------------------------
-// 2️⃣ Weapon Achievements Setup
-// -----------------------------
 const weaponCategories = [
   { key: "RifleKills", name: "Sharpshooter" },
   { key: "ShotgunKills", name: "Spray & Pray" },
@@ -136,77 +131,116 @@ const weaponCategories = [
   { key: "BazookaKills", name: "Rocket Rider" },
   { key: "GrenadeKills", name: "Bomba" },
   { key: "GatlingKills", name: "Killing Spree" },
-  { key: "TotalKills", name: "Total Slayer" }
+  { key: "Kills", name: "Total Slayer" } // This is the 'Total Slayer' category
 ];
 
-// Kill thresholds
 const killThresholds = [100, 500, 1500, 3000, 5000, 9000, 15000, 30000, 50000, 100000, 200000, 500000];
+const coinCouponWeaponItems = [{ itemId: 5336100, itemName: "Random Coupon BOX(P)" }, { itemId: 4308102, itemName: "5 Coins" }, { itemId: 4308103, itemName: "10 Coins" }];
+// const specialWeapon = { itemId: 9999001, itemName: "PLACEHOLDER REWARD WEAPON" };
 
-let weaponMpItemStartId = 4700000;
-const coinCouponWeaponItems = [
-  { itemId: 4308102, itemName: "5 Coins" },
+// Define battery quantities for each kill threshold index
+const weaponBatteryQuantities = [
+  1,  // 100 kills
+  2,  // 500 kills
+  4,  // 1500 kills
+  5,  // 3000 kills
+  6,  // 5000 kills
+  7,  // 9000 kills
+  8,  // 15000 kills
+  9,  // 30000 kills
+  10, // 50000 kills
+  10, // 100000 kills
+  10, // 200000 kills
+  10  // 500000 kills
 ];
-const specialWeapon = { itemId: 9999001, itemName: "Ultimate Weapon" };
 
+// Function to get battery quantity based on the kill threshold's index
 function getWeaponBattery(index) {
-  return index >= killThresholds.length - 2 ? 10 : 5;
+  // Ensure the index is within the bounds of the array
+  if (index >= 0 && index < weaponBatteryQuantities.length) {
+    return weaponBatteryQuantities[index];
+  }
+  return 1; // Default to 1 battery if index is out of bounds
 }
 
-// Generate weapon achievements
-const weaponAchievements = [];
+// Custom MP amounts for kill achievements
+const killMpAmounts = {
+  100: 100,    // 100 kills = 100 MP
+  500: 1000,   // 500 kills = 1000 MP
+  1000: 2000,  // 1000 kills = 2000 MP (adjusted from 1500 MP to use an existing mpItem key)
+  1500: 3000,
+  3000: 4000,
+  5000: 5000,
+  9000: 10000,
+  15000: 20000,
+  30000: 30000,
+  50000: 50000,
+  100000: 100000,
+  200000: 150000,
+  500000: 500000
+};
 
+const weaponAchievements = [];
 weaponCategories.forEach(category => {
   killThresholds.forEach((threshold, index) => {
-    const displayNumber = Math.min(index + 1, 20); // Friendly name capped at 20
     const rewards = [];
+    const displayNumber = Math.min(index + 1, 20); // Friendly name capped at 20
 
-    // MP reward
-    rewards.push({
-      itemId: weaponMpItemStartId++,
-      itemName: `${threshold * 50} MP`,
-      quantity: 1
-    });
+    let achievementName;
+    let achievementSlug;
+    let achievementDescription;
 
-    // Battery
-    rewards.push({
-      itemId: 4305006,
-      itemName: "Battery",
-      quantity: getWeaponBattery(index)
-    });
+    // Standardized slug generation for all weapon categories
+    const cleanedCategoryName = category.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    achievementSlug = `${cleanedCategoryName}-${displayNumber}`;
 
-    // Coins + coupons
-    if (index < killThresholds.length - 2) {
+    // Determine name and description based on category
+    if (category.key === "Kills") { // This is the "Total Slayer" category
+      achievementName = `${category.name} - ${displayNumber}`;
+      achievementDescription = `Achieve ${threshold} kills.`;
+    } else { // For specific weapon categories
+      const weaponTypeName = category.key.replace('Kills', ''); // Remove 'Kills' suffix
+      achievementName = `${category.name} - ${displayNumber}`;
+      achievementDescription = `Achieve ${threshold} kills with ${weaponTypeName}.`;
+    }
+
+    // ✅ MP reward based on new 'killMpAmounts'
+    const mpValueForKill = killMpAmounts[threshold];
+    const mpItemIdForKill = mpItems[mpValueForKill]; // Look up the itemId from the global mpItems map
+    if (mpItemIdForKill) {
+      rewards.push({
+        itemId: mpItemIdForKill,
+        itemName: `${mpValueForKill} MP`,
+        quantity: 1
+      });
+    } else {
+      console.warn(`No mpItem defined for ${mpValueForKill} MP (for ${threshold} kills). Check mpItems object.`);
+    }
+
+    // ✅ Battery reward (using the new progressive logic)
+    rewards.push({ ...batteryItem, quantity: getWeaponBattery(index) });
+
+    // Placeholder logic for other weapon rewards (as not fully specified in original snippet)
+    if (threshold >= 100000) { // Example: award coin coupons for high kill counts
       coinCouponWeaponItems.forEach(item => rewards.push({ ...item, quantity: 1 }));
     }
-
-    // Special weapon for last 2 thresholds
-    if (index >= killThresholds.length - 2) {
-      rewards.push({ ...specialWeapon, quantity: 1 });
-    }
+    // if (threshold === 500000) { // Example: award special weapon for highest tier
+    //   rewards.push({ ...specialWeapon, quantity: 1 });
+    // }
 
     weaponAchievements.push({
-      name: `${category.name} ${displayNumber}`,
-      achievementSlug: `${category.key.toLowerCase()}-${displayNumber}`,
-      description: `Achieve ${threshold} ${category.key.replace(/Kills$/, "")} kills`,
+      name: achievementName,
+      achievementSlug: achievementSlug,
+      description: achievementDescription, // Use the dynamically created description
       requirements: { [category.key]: threshold },
       rewards
     });
   });
 });
 
-// -----------------------------
-//  Output Generation
-// -----------------------------
+// Combine all achievements before writing to file
 const allAchievements = [...levelAchievements, ...weaponAchievements];
 
-// Create the directory if it doesn't exist
-const outputDir = path.join(__dirname, "../../data/configs");
-const outputFile = path.join(outputDir, "achievements_data.json");
-
-// Ensure directory exists
-fs.mkdirSync(outputDir, { recursive: true });
-
-fs.writeFileSync(outputFile, JSON.stringify({ achievements: allAchievements }, null, 2));
+// Corrected file path for writing achievements_data.json
+fs.writeFileSync("data/configs/achievements_data.json", JSON.stringify({ achievements: allAchievements }, null, 2));
 console.log("✅ achievements.json generated successfully!");
-console.log(`📁 Output location: ${outputFile}`);
-console.log(`Generated ${levelAchievements.length} level achievements and ${weaponAchievements.length} weapon achievements.`);

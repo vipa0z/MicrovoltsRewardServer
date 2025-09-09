@@ -124,7 +124,7 @@ async function startServer() {
 
 
         // 4. Validate and load config files
-        const categories = ["wheel_items_data", "shop_items_data", "hourly_items", "achievements_data"];
+        const categories = ["wheel_items_data", "shop_items_data", "achievements_data", "hourly_items"];
         for (const category of categories) {
             if (!skipValidation) {
                 await ConfigValidator.validateConfigFileOnStartup(category);
