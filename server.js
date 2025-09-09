@@ -110,9 +110,15 @@ async function startServer() {
             console.log(chalk.green('[+] Admin creation script finished.'));
         }
         console.log("\n")
-        console.log(chalk.magenta('[+] Initialising MVO Rewards Server'));
-        console.log("──────────────────────────────────────────────────────────────")
-
+        console.log(chalk.magentaBright(`
+            |  \\/  | \\ \\ / /  / _ \\  
+            | |\\/| |  \\ V /  | (_) | 
+            |_|__|_|  _\\_/_   \\___/  
+            _|"""""|_| """"|_|"""""| 
+            \`-0-0-'  \`-0-0-'  \`-0-0-\` 
+            `));
+            console.log(chalk.magentaBright(`Rewards Server v 0.5`));
+            console.log("──────────────────────────────────────────────────────────────")
         const skipValidation = process.env.DISABLE_ITEM_VALIDATION === 'true';
 
         // 3. Load items into memory
@@ -124,7 +130,7 @@ async function startServer() {
 
 
         // 4. Validate and load config files
-        const categories = ["wheel_items_data", "shop_items_data", "achievements_data", "hourly_items"];
+        const categories = ["wheel_items_data", "shop_items_data", "hourly_items", "achievements_data"];
         for (const category of categories) {
             if (!skipValidation) {
                 await ConfigValidator.validateConfigFileOnStartup(category);
@@ -139,8 +145,10 @@ async function startServer() {
 
         // 5. Start the server
         app.listen(PORT, () => {
+            
+
             console.log("──────────────────────────────────────────────────────────────");
-            console.log(chalk.white(`🔥 Server started on port ${PORT}, Environment: ${process.env.ENVIRONMENT || process.env.NODE_ENV || 'development'}`));
+            console.log(chalk.white(`🔥 Server started on port ${PORT}, Environment: ${process.env.ENVIRONMENT || process.env.NODE_ENV || 'development'} 🔥`));
         });
 
     } catch (error) {

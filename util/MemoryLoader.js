@@ -81,7 +81,7 @@ class MemoryLoader {
                 }
             
                 this.items[category] = achievementsArray;
-                logger.success(`[✓] Loaded ${achievementsArray.length} achievements into memory`);
+                logger.success(`[MemoryLoader] Loaded ${achievementsArray.length} achievements into memory`);
                 return this.items[category];
             }
             
@@ -92,7 +92,7 @@ class MemoryLoader {
 
             // Store items in memory
             this.items[config.key] = parsedData[config.key];
-            logger.success(`[✓] Loaded ${this.items[config.key].length} ${config.key} into memory`);
+            logger.success(`[MemoryLoader] Loaded ${this.items[config.key].length} ${config.key} into memory`);
             
             return this.items[config.key];
         } catch (error) {

@@ -1,5 +1,5 @@
-const {logger} = require('./logger');
-const db = require('../db');
+const {logger} = require('../logger');
+const db = require('../../database/connection');
 const crypto = require('crypto');
 const chalk = require('chalk');
 
@@ -25,7 +25,7 @@ async function ensureRewardFieldsExist() {
   const rows = await db.query(
     `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
      WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users'
-     AND COLUMN_NAME IN ('WheelSpinsClaimed', 'dailyPlayTime', 'dailySpinsClaimed')`,
+     AND COLUMN_NAME IN ('WheelSpinsClaimed', 'dailyPlayTime', 'dailySpinsClaimed', 'EventCurrency')`,
     [process.env.DB_NAME]
   );
 

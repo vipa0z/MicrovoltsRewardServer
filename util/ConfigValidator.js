@@ -142,7 +142,7 @@ async function validateConfigFileOnStartup(category) {
             console.log(chalk.red(`[!] Invalid item IDs in ${config.filename}: ${result.invalidItemIds.join(", ")}`));
             process.exit(0)
         } else {
-            console.log(chalk.green(`[✓] All item IDs in ${config.filename} are valid.`));
+            logger.success(`[ConfigValidator] All item IDs in ${config.filename} are valid.`);
         }
 
         return result;
@@ -229,33 +229,49 @@ async function validateAchievementsOnStartup() {
             return { success: false, invalidItemIds: Array.from(invalidItemIds) };
         }
 
-        console.log(chalk.green(`[✓] All reward item IDs in achievements_data.json are valid.`));
+        logger.success(`[ConfigValidator] All reward item IDs in achievements_data.json are valid.`);
         return { success: true, validItemIds: Array.from(validItemIds) };
     } catch (err) {
-        logger.error(`Error validating achievements config: ${err.message}\n${err.stack}`);
+        logger.error(`[ConfigValidator] Error validating achievements config: ${err.message}\n${err.stack}`);
         return { success: false, error: err.message };
     }
 }
-
 function validateItemStructure(entry, category) {
+    // Base required fields for all items
     let requiredFields = ['itemId', 'itemName', 'itemOption'];
-
-    // shop items must include a price
-    if (category === 'shop_items_data') {
-        requiredFields.push('price');
+    let allowedFields = [...requiredFields]; // Start with required fields
+    
+    // Category-specific fields
+    switch(category) {
+        case 'shop_items_data':
+            allowedFields.push('price');
+            break;
+            
+        case 'wheel_items_data':
+            // allowedFields.push('dropRate'); // (to be added for wheel)
+            break;
+            
+        case 'hourly_items':
+            allowedFields.push('dropRate');
+            break;
+            
     }
 
     const entryKeys = Object.keys(entry);
+    
+    // Check for missing required fields
     const missing = requiredFields.filter(field => !(field in entry));
     if (missing.length > 0) {
         return { valid: false, error: `Missing required field(s): ${missing.join(', ')}` };
     }
 
-    const unknown = entryKeys.filter(key => !requiredFields.includes(key));
+    // Check for unknown fields (only allow what's in allowedFields)
+    const unknown = entryKeys.filter(key => !allowedFields.includes(key));
     if (unknown.length > 0) {
-        return { valid: false, error: `Unknown field(s): ${unknown.join(', ')}` };
+        return { valid: false, error: `Unknown field(s): ${unknown.join(', ')}. Allowed: ${allowedFields.join(', ')}` };
     }
 
+    // Rest of your validation logic...
     const itemId = entry.itemId;
     if (
         !(
@@ -269,12 +285,18 @@ function validateItemStructure(entry, category) {
     if (typeof entry.itemName !== 'string') {
         return { valid: false, error: `Invalid itemName: must be a string.` };
     }
+    
     if (typeof entry.itemOption !== 'string') {
         return { valid: false, error: `Invalid itemOption: must be a string.` };
     }
 
+    // Category-specific validations
     if (category === 'shop_items_data' && typeof entry.price !== 'number') {
         return { valid: false, error: `Invalid price: must be a number.` };
+    }
+
+    if (category === 'wheel_items_data' && entry.dropRate !== undefined && typeof entry.dropRate !== 'number') {
+        return { valid: false, error: `Invalid dropRate: must be a number.` };
     }
 
     return { valid: true };
