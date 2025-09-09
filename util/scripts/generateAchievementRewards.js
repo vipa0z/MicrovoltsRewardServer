@@ -1,4 +1,6 @@
+
 const fs = require("fs");
+const path = require("path");
 
 // -----------------------------
 // 1️⃣ Level Achievements Setup
@@ -66,7 +68,6 @@ const specialItems = {
     { itemId: 5336562, itemName: "Coupon Box" },
     { itemId: 4308103, itemName: "10 Coins" }],
   80: [{ itemId: 9999000, itemName: "Silver Death Scythe" }],
-
 };
 
 // Coin + coupon ranges
@@ -87,7 +88,7 @@ const coinCouponItems = [
 const levelAchievements = levels.map(level => {
   const rewards = [];
 
-  // ✅ MP (lookup real itemId)
+  // MP lookup 
   const mpValue = mpMap[level];
   const mpItemId = mpItems[mpValue];
   if (mpItemId) {
@@ -98,18 +99,18 @@ const levelAchievements = levels.map(level => {
     });
   }
 
-  // ✅ Battery
+  // Battery
   const batteryQty = getLevelBattery(level);
   if (batteryQty > 0) {
     rewards.push({ ...batteryItem, quantity: batteryQty });
   }
 
-  // ✅ Special items
+  // Special items
   if (specialItems[level]) {
     specialItems[level].forEach(item => rewards.push({ ...item, quantity: 1 }));
   }
 
-  // ✅ Coin + coupons
+  // Coin + coupons
   coinCouponLevels.forEach(range => {
     if (level >= range.start && level <= range.end) {
       coinCouponItems.forEach(item => rewards.push({ ...item, quantity: 1 }));
@@ -126,8 +127,86 @@ const levelAchievements = levels.map(level => {
 });
 
 // -----------------------------
-// 2️⃣ (Keep your Weapon achievements as is for now)
+// 2️⃣ Weapon Achievements Setup
 // -----------------------------
+const weaponCategories = [
+  { key: "RifleKills", name: "Sharpshooter" },
+  { key: "ShotgunKills", name: "Spray & Pray" },
+  { key: "SniperKills", name: "Eagle Eye" },
+  { key: "BazookaKills", name: "Rocket Rider" },
+  { key: "GrenadeKills", name: "Bomba" },
+  { key: "GatlingKills", name: "Killing Spree" },
+  { key: "TotalKills", name: "Total Slayer" }
+];
 
-fs.writeFileSync("configs/data/achievements_data.json", JSON.stringify({ achievements: levelAchievements }, null, 2));
+// Kill thresholds
+const killThresholds = [100, 500, 1500, 3000, 5000, 9000, 15000, 30000, 50000, 100000, 200000, 500000];
+
+let weaponMpItemStartId = 4700000;
+const coinCouponWeaponItems = [
+  { itemId: 4308102, itemName: "5 Coins" },
+];
+const specialWeapon = { itemId: 9999001, itemName: "Ultimate Weapon" };
+
+function getWeaponBattery(index) {
+  return index >= killThresholds.length - 2 ? 10 : 5;
+}
+
+// Generate weapon achievements
+const weaponAchievements = [];
+
+weaponCategories.forEach(category => {
+  killThresholds.forEach((threshold, index) => {
+    const displayNumber = Math.min(index + 1, 20); // Friendly name capped at 20
+    const rewards = [];
+
+    // MP reward
+    rewards.push({
+      itemId: weaponMpItemStartId++,
+      itemName: `${threshold * 50} MP`,
+      quantity: 1
+    });
+
+    // Battery
+    rewards.push({
+      itemId: 4305006,
+      itemName: "Battery",
+      quantity: getWeaponBattery(index)
+    });
+
+    // Coins + coupons
+    if (index < killThresholds.length - 2) {
+      coinCouponWeaponItems.forEach(item => rewards.push({ ...item, quantity: 1 }));
+    }
+
+    // Special weapon for last 2 thresholds
+    if (index >= killThresholds.length - 2) {
+      rewards.push({ ...specialWeapon, quantity: 1 });
+    }
+
+    weaponAchievements.push({
+      name: `${category.name} ${displayNumber}`,
+      achievementSlug: `${category.key.toLowerCase()}-${displayNumber}`,
+      description: `Achieve ${threshold} ${category.key.replace(/Kills$/, "")} kills`,
+      requirements: { [category.key]: threshold },
+      rewards
+    });
+  });
+});
+
+// -----------------------------
+//  Output Generation
+// -----------------------------
+const allAchievements = [...levelAchievements, ...weaponAchievements];
+
+// Create the directory if it doesn't exist
+const outputDir = path.join(__dirname, "../../data/configs");
+const outputFile = path.join(outputDir, "achievements_data.json");
+
+// Ensure directory exists
+fs.mkdirSync(outputDir, { recursive: true });
+
+fs.writeFileSync(outputFile, JSON.stringify({ achievements: allAchievements }, null, 2));
 console.log("✅ achievements.json generated successfully!");
+console.log(`📁 Output location: ${outputFile}`);
+console.log(`Generated ${levelAchievements.length} level achievements and ${weaponAchievements.length} weapon achievements.`);
