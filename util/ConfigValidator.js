@@ -4,23 +4,18 @@ const chalk = require("chalk");
 const {logger} = require('./logger')
 const { CATEGORY_CONFIGS } = require('../data/categoryMappings');
 const MemoryLoader = require('./MemoryLoader');
+
 function extractItemIds(items) {
     const ids = [];
-// check for arrays of itemId and unwrap them
-    for (const wrapper of items) {
-        const item = Array.isArray(wrapper) ? wrapper[0] : wrapper;
 
+    for (const item of items) {
         if (!item) continue;
 
-        if (Array.isArray(item.itemId)) {
-            ids.push(...item.itemId);
-        }
-        else if (typeof item.itemId === "number") {
-            ids.push(item.itemId);
-        }
+        if (Array.isArray(item.itemId)) ids.push(...item.itemId);
+        else if (typeof item.itemId === 'number') ids.push(item.itemId);
     }
-    return ids.filter(id => typeof id === "number" && !isNaN(id));
 
+    return ids.filter(id => typeof id === 'number' && !isNaN(id));
 }
 
 //  Main item validator
@@ -125,8 +120,6 @@ async function validateConfigFileOnStartup(category) {
         if (!Array.isArray(items)) {
             items = [items]; 
         }
-
-        items = items.map(item => Array.isArray(item) ? item[0] : item);
         for (const item of items) {
             const structureCheck = validateItemStructure(item,category);
             if (!structureCheck.valid) {
@@ -139,7 +132,7 @@ async function validateConfigFileOnStartup(category) {
         const result = await validateItems(category, items, { saveIfValid: false, fromFile: true });
 
         if (!result.success) {
-            console.log(chalk.red(`[!] Invalid item IDs in ${config.filename}: ${result.invalidItemIds.join(", ")}`));
+            logger.error(`[!] Invalid item IDs in ${config.filename}: ${result.invalidItemIds.join(", ")}`);
             process.exit(0)
         } else {
             logger.success(`[ConfigValidator] All item IDs in ${config.filename} are valid.`);
@@ -236,29 +229,31 @@ async function validateAchievementsOnStartup() {
         return { success: false, error: err.message };
     }
 }
+
+
+
+
 function validateItemStructure(entry, category) {
     // Base required fields for all items
-    let requiredFields = ['itemId', 'itemName', 'itemOption'];
-    let allowedFields = [...requiredFields]; // Start with required fields
-    
+    const baseFields = ['itemId', 'itemName', 'itemOption'];
+    let requiredFields = [...baseFields];
+    let allowedFields = [...baseFields];
+
     // Category-specific fields
-    switch(category) {
-        case 'shop_items_data':
-            allowedFields.push('price');
-            break;
-            
-        case 'wheel_items_data':
-            // allowedFields.push('dropRate'); // (to be added for wheel)
-            break;
-            
-        case 'hourly_items':
-            allowedFields.push('dropRate');
-            break;
-            
+    const categoryFields = {
+        shop_items_data: ['price'],
+        // wheel_items_data: ['dropRate'],   if you want to have drop rates on wheel items you can uncomment this if statement
+
+        playtime_draw_data: ['dropRate'] 
+    };
+
+    if (categoryFields[category]) {
+        requiredFields.push(...categoryFields[category]);
+        allowedFields.push(...categoryFields[category]);
     }
 
     const entryKeys = Object.keys(entry);
-    
+
     // Check for missing required fields
     const missing = requiredFields.filter(field => !(field in entry));
     if (missing.length > 0) {
@@ -271,12 +266,11 @@ function validateItemStructure(entry, category) {
         return { valid: false, error: `Unknown field(s): ${unknown.join(', ')}. Allowed: ${allowedFields.join(', ')}` };
     }
 
-    // Rest of your validation logic...
-    const itemId = entry.itemId;
+    // Type validations
     if (
         !(
-            (typeof itemId === 'number' && Number.isInteger(itemId)) ||
-            (Array.isArray(itemId) && itemId.every(id => typeof id === 'number' && Number.isInteger(id)))
+            (typeof entry.itemId === 'number' && Number.isInteger(entry.itemId)) ||
+            (Array.isArray(entry.itemId) && entry.itemId.every(id => typeof id === 'number' && Number.isInteger(id)))
         )
     ) {
         return { valid: false, error: `Invalid itemId: must be an integer or array of integers.` };
@@ -285,23 +279,26 @@ function validateItemStructure(entry, category) {
     if (typeof entry.itemName !== 'string') {
         return { valid: false, error: `Invalid itemName: must be a string.` };
     }
-    
+
     if (typeof entry.itemOption !== 'string') {
         return { valid: false, error: `Invalid itemOption: must be a string.` };
     }
 
-    // Category-specific validations
+    // Category-specific type checks
     if (category === 'shop_items_data' && typeof entry.price !== 'number') {
         return { valid: false, error: `Invalid price: must be a number.` };
     }
+        // if you want to have drop rates on wheel items you can uncomment this if statement
+    // if (category === 'wheel_items_data' && entry.dropRate !== undefined && typeof entry.dropRate !== 'number') {
+    //     return { valid: false, error: `Invalid dropRate: must be a number.` };
+    // }
 
-    if (category === 'wheel_items_data' && entry.dropRate !== undefined && typeof entry.dropRate !== 'number') {
+    if (category === 'playtime_draw_data' && typeof entry.dropRate !== 'number') {
         return { valid: false, error: `Invalid dropRate: must be a number.` };
     }
 
     return { valid: true };
 }
-
 
 module.exports = {
     validateItems,

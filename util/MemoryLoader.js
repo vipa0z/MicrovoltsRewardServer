@@ -2,7 +2,6 @@ const fs = require('fs').promises;
 const path = require('path');
 const {logger} = require('./logger');
 const { CATEGORY_CONFIGS } = require('../data/categoryMappings');
-const allItemsPath = path.join(__dirname, '..', 'data', 'itemInfo.json');
 class MemoryLoader {
     static items = {
         wheel_items_data: [],
@@ -12,55 +11,53 @@ class MemoryLoader {
     }
     static allItems = [];
  
-
-
-    static async loadAllItemsIntoMemory() {
+    static async loadAndTransformItemsInfo() {
+        const rawPath = path.join(__dirname, '..', 'data', 'itemInfo.json');
+        const transformedPath = path.join(__dirname, '..', 'data', 'itemInfo.transformed.json');
+    
         try {
-            const data = await fs.readFile(allItemsPath, "utf8");
+            // Try loading transformed version
+            const transformedData = await fs.readFile(transformedPath, 'utf8');
+            this.allItems = JSON.parse(transformedData); // populate allItems
+            logger.success(`[MemoryLoader] Loaded ${this.allItems.length} items from transformed file`);
+            return this.allItems;
+        } catch (err) {
+            // transformed file doesn't exist → process raw
+            const rawData = await fs.readFile(rawPath, 'utf8');
+            const items = JSON.parse(rawData);
     
-            const items = JSON.parse(data);
-    
-            if (!Array.isArray(items)) {
-                throw new Error("❌ Items file must be a JSON array at the top level.");
-            }
-            this.allItems = items.map((item, idx) => {
+            this.allItems = items.map(item => {
                 const newItem = {};
-    
                 for (const key in item) {
-                    if (!Object.prototype.hasOwnProperty.call(item, key)) continue;
-    
-                    if (key === "ii_time") {
-                        newItem.itemDuration = item[key];
-                    } else if (key.startsWith("ii_")) {
+                    if (key === 'ii_time') newItem.itemDuration = item[key];
+                    else if (key.startsWith('ii_')) {
                         const camelCasePart = key
                             .substring(3)
-                            .split("_")
-                            .map(word =>
-                                word
-                                    ? word.charAt(0).toUpperCase() + word.slice(1)
-                                    : ""
-                            )
-                            .join("");
-                        const newKey = "item" + camelCasePart;
-                        newItem[newKey] = item[key];
+                            .split('_')
+                            .map(w => w ? w[0].toUpperCase() + w.slice(1) : '')
+                            .join('');
+                        newItem['item' + camelCasePart] = item[key];
                     } else {
                         newItem[key] = item[key];
                     }
                 }
     
+                // ensure itemId is always an array
+                newItem.itemId = Array.isArray(newItem.itemId) ? newItem.itemId : [newItem.itemId];
                 return newItem;
-            });
+            }).filter(item => item && item.itemId && item.itemName); // filter invalid entries
+    
+            // Save transformed version
+            await fs.writeFile(transformedPath, JSON.stringify(this.allItems, null, 4), 'utf8');
+            logger.success(`[MemoryLoader] Transformed and saved ${this.allItems.length} items`);
     
             return this.allItems;
-        } catch (err) {
-            console.error("❌ Failed to load all items into memory:", err.message);
-            logger.error("Failed to load all items into memory.", err);
-            throw err;
         }
     }
     
-
-    static async loadItemsIntoMemory(category) {
+    
+   
+    static async loadCategoryItemsIntoMemory(category) {
         try {
             const config = CATEGORY_CONFIGS[category];
             
@@ -144,7 +141,7 @@ class MemoryLoader {
  
     static async reloadCategory(category) {
         try {
-            await this.loadItemsIntoMemory(category);
+            await this.loadCategoryItemsIntoMemory(category);
             logger.info(`[✓] Reloaded ${category} into memory`);
             return true;
         } catch (error) {

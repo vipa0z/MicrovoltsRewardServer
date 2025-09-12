@@ -25,7 +25,7 @@ async function ensureRewardFieldsExist() {
   const rows = await db.query(
     `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
      WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users'
-     AND COLUMN_NAME IN ('WheelSpinsClaimed', 'dailyPlayTime', 'dailySpinsClaimed', 'EventCurrency')`,
+     AND COLUMN_NAME IN ('WheelSpinsClaimed', 'TwoHoursCounter', 'dailySpinsClaimed', 'EventCurrency')`,
     [process.env.DB_NAME]
   );
 
@@ -40,9 +40,9 @@ async function ensureRewardFieldsExist() {
     toAdd.push(`ADD COLUMN dailySpinsClaimed INT DEFAULT 0`);
     console.log('added daily column 1.');
   }
-  if (!existing.includes('dailyPlayTime')) {
-    toAdd.push(`ADD COLUMN dailyPlayTime INT DEFAULT 0`);
-    console.log('added playtime column 1.');
+  if (!existing.includes('TwoHoursCounter')) {
+    toAdd.push(`ADD COLUMN TwoHoursCounter INT DEFAULT 0`);
+    console.log('added two hours counter column 1.');
   }
   if (!existing.includes('EventCurrency')) {
     toAdd.push(`ADD COLUMN EventCurrency INT DEFAULT 0`);
@@ -88,7 +88,7 @@ async function ensurePlayerAchievementsTable() {
 // Create initial admin user if not exists
 async function ensureAdminUser(username, password) {
   const USERNAME = (username || '').trim();
-  const NICKNAME = USERNAME;
+  const nickname = USERNAME;
   const GRADE = 7;
   const LEVEL = 1;
 
@@ -100,23 +100,25 @@ async function ensureAdminUser(username, password) {
   const existing = await db.query('SELECT 1 FROM users WHERE Username = ? LIMIT 1', [USERNAME]);
   if (existing && existing.length > 0) {
     console.log(`✅ Admin user '${USERNAME}' already exists. Skipping creation.`);
-    return false;
+    process.exit(1);
   }
 
   if (!isValidPassword(password)) {
-    throw new Error('Admin password does not meet policy: at least 6 characters and include at least one symbol.');
+    console.log(chalk.red('Admin password does not meet policy: at least 6 characters and include at least one symbol.'));
+    process.exit(1);
   }
 
   const hashed = crypto.createHash('sha256').update(password).digest('hex');
   await db.query(
-    'INSERT INTO users (Username, Password, Nickname, Grade, level) VALUES (?, ?, ?, ?, ?)',
-    [USERNAME, hashed, NICKNAME, GRADE, LEVEL]
+    'INSERT INTO users (Username, Password, nickname, Grade, level) VALUES (?, ?, ?, ?, ?)',
+    [USERNAME, hashed, nickname, GRADE, LEVEL]
   );
   console.log(`✅ Created admin user '${USERNAME}' with grade ${GRADE}.`);
-  return true;
+  process.exit(0);
+
 }
 
-exports.run = async function run() {
+exports.ensureRewardFieldsAndTables = async function () {
   try {
     await ensureRewardFieldsExist();
     await ensurePlayerAchievementsTable();

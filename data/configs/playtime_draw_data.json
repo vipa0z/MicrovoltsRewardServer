@@ -1,0 +1,17 @@
+{
+    "playtime_draw_data": [
+      {
+        "itemName": "Anesidora chestplate",
+        "itemOption": "Speed",
+        "itemId": 1110151,
+        "dropRate": 0.002
+      },
+      {
+        "itemName": "Gold Rifle",
+        "itemOption": "NA",
+        "itemId": 1140001,
+        "dropRate": 0.001
+      }
+    ]
+  }
+  
