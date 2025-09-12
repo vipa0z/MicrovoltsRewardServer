@@ -1,16 +1,10 @@
 
-## Overview
+## Script Menu Overview
 
 The script menu handles various in-game reward mechanisms and administrative tasks.
 
 ```text
 
-    |  \/  | \ \ / /  / _ \  
-    | |\/| |  \ V /  | (_) | 
-    |_|__|_|  _\_/_   \___/  
-    _|"""""|_| """"|_|"""""| 
-    `-0-0-'  `-0-0-'  `-0-0-` 
-    
 Rewards Server v 0.5
 ──────────────────────────────────────────────────────────────
 [+] MVO Scripts Menu
