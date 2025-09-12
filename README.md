@@ -40,9 +40,9 @@ The catch is that I haven't had a chance to write tests for everything yet, so s
 ![Microvolts](bea969fced10a14b443c0af9240b566e_w200.gif)
 
 
-## Compatibility
-- The server is not plug and play yet but can be tested with tools like Postman.
-- It is designed to send rewards via API requests to the [MicrovoltsEmulator](https://github.com/SoWeBegin/MicrovoltsEmulator).
+## Usability
+- The server currently lacks a GUI, but the API can be used and tested via tools like Postman.
+- sends rewards via API requests to the [MicrovoltsEmulator](https://github.com/SoWeBegin/MicrovoltsEmulator).
 
 
 
