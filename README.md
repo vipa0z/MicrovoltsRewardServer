@@ -1,6 +1,18 @@
-# Microvolts OverVolt: Rewards Server
 
-A recreation of the Previous Microvolts reward systems that restores the functionality of servers like Microvolts Surge and Toyheroes Offline.
+## MVO Rewards Server Documentation Overview
+
+The MVO Rewards Server handles various in-game reward mechanisms and administrative tasks.
+```json
+    |  \/  | \ \ / /  / _ \  
+    | |\/| |  \ V /  | (_) | 
+    |_|__|_|  _\_/_   \___/  
+    _|"""""|_| """"|_|"""""| 
+    `-0-0-'  `-0-0-'  `-0-0-` 
+    
+Microvolts OverVolt v 0.5
+──────────────────────────────────────────────────────────────
+```
+
 
 
 ## Table of Contents
@@ -14,11 +26,10 @@ A recreation of the Previous Microvolts reward systems that restores the functio
 ---
 
 ## Features
-
-- **Referral Wheel** (✅ Implemented)
-- **Achievements** (✅ Implemented)
-- **Event Shop** (✅ Implemented)
-- **Rewards per Hours Played** (✅ Implemented)
+- **Referral Wheel** 
+- **Achievement system** 
+- **Event Shop** 
+- **daily playtime chest**
 - **GUI** (🔜 Planned)
 
 ## Development Status
@@ -44,3 +55,4 @@ For a complete guide on setup, configuration, and API usage, please see the **[F
 *   **[Server Configuration](./docs/configuration/README.md)**: Learn how to set up your `.env` file, prepare the database, and create an admin user.
 *   **[API Reference](./docs/api-reference/README.md)**: Detailed guides for every API endpoint, including request/response examples.
 *   **[Core Systems](./docs/core-systems/README.md)**: An inside look at how the server handles configuration loading, validation, and in-memory caching.
+
