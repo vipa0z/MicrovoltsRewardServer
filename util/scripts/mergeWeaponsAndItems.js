@@ -25,7 +25,7 @@ function transformFieldNames(item, iconData = null) {
   return {
     itemId: item.ii_id,
     itemName: item.ii_name,
-    itemOption: item.ii_option,
+    itemOption: item.ii_name_option,
     itemDuration: item.ii_name_time,
     
     
@@ -55,9 +55,7 @@ async function processGameData() {
    
     // Transform and return
     return transformFieldNames(item, null);
-  }).filter(item => {
-    return item.iconId !== null && item.iconId !== undefined;
-  });
+  })
   
   return processedItems;
 }
@@ -68,7 +66,6 @@ async function saveProcessedData(data) {
   
   try {
     await fs.writeFile(outputFile, JSON.stringify(data, null, 2));
-    logger.success(`Successfully saved ${data.length} items to ${outputFile}`);
   } catch (error) {
     logger.error('Error saving file:', error);
     throw error;
@@ -77,46 +74,24 @@ async function saveProcessedData(data) {
 
 // Step 6: Main execution function
 async function run() {
+  logger.info("Starting merging items and weapons...");
+
   try {
-   logger.info("Starting merging items and weapons...");
     
     const processedData = await processGameData();
     
-    console.log(`Processed ${processedData.length} items`);
-    
-    // logger.warn('Sample processed item:', processedData[0]);
     
     await saveProcessedData(processedData);
+    logger.success(`Master list 'itemInfo.transformed.json' has been updated!`);
+    process.exit(0);
     
-    console.log('Data processing complete!');
   } catch (error) {
     console.error('Processing failed:', error);
+    process.exit(1);
   }
+
+
 }
 
-// Alternative approach using streams for large files
-async function processLargeFiles() {
-  const fs = require('fs');
-  const { pipeline } = require('stream/promises');
-  const { Transform } = require('stream');
-  
-  // Create transform stream for processing
-  const processTransform = new Transform({
-    objectMode: true,
-    transform(chunk, encoding, callback) {
-      // Process each chunk of data
-      const processed = transformFieldNames(chunk);
-      callback(null, processed);
-    }
-  });
-  
-  await pipeline(
-    fs.createReadStream('input.json'),
-    processTransform,
-    fs.createWriteStream('output.json')
-  );
-}
-
-// Execute the main function
 
 module.exports = { run };
