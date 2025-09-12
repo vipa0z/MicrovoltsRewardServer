@@ -36,8 +36,9 @@ Microvolts OverVolt v 0.5
 The good news is that most of the features I wanted are in here!
 
 The catch is that I haven't had a chance to write tests for everything yet, so some parts are definitely more stable than others. You might run into some flaky behavior. If you find a bug, please let me know by opening an issue! 
-
-![Microvolts](bea969fced10a14b443c0af9240b566e_w200.gif)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a1a6fcfd-27ed-4771-b8ab-0adb7982f6b6" alt="roblox-natural-disaster-survival" />
+</p>
 
 
 ## Usability
