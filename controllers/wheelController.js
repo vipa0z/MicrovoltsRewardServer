@@ -7,7 +7,7 @@ exports.drawWheel = async (req, res) => {
     try {
         const spinResult = await wheel.spin();
         
-        if (!spinResult.success) {
+        if (!spinResult.error) {
             return res.status(403).json({...spinResult});
         }
         
@@ -32,7 +32,7 @@ exports.drawWheel = async (req, res) => {
 }
 // API get
 exports.getWheelItems = async (req, res) => {
-    const playerInfo = {playerId:req.user.playerId,Nickname:req.user.Nickname}
+    const playerInfo = {playerId:req.user.playerId,nickname:req.user.nickname}
     const wheel = new SpinningWheel(playerInfo)
     try {
     const eligibility = await wheel.checkEligibility();
@@ -55,7 +55,10 @@ exports.getWheelItems = async (req, res) => {
         });
     }
 }
-// ssr
+
+
+
+// GUI
 // exports.renderWheelPage = async (req, res) => {
 //     const playerId = req.user.playerId;
 //     const wheel = new SpinningWheel(playerId);

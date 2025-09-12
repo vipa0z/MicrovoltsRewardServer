@@ -2,9 +2,9 @@ const Achievements = require("../services/AchievementService")
 const Player = require("../database/Player")
 exports.getSelfAchievements = async (req , res) => {
  const playerId = req.user.id;
- const playerNickName = req.user.nickname;
+ const playernickname = req.user.nickname;
     try {
-        const achievements = new Achievements(playerId,playerNickName)
+        const achievements = new Achievements(playerId,playernickname)
         const achievementData = await achievements.getAchievements()
         res.status(200).json({
             success: true,
@@ -19,14 +19,14 @@ exports.getSelfAchievements = async (req , res) => {
     }
 }
 exports.getSocialAchievements = async (req , res) => {
-    const playerNickName = req.params.nickname;
-    if (!playerNickName) {
+    const playernickname = req.params.nickname;
+    if (!playernickname) {
         return res.status(400).json({
             success: false,
             error: "Missing nickname parameter"
         })
     }
-    const doesPlayerExist = await Player.findUserByNickname(playerNickName)
+    const doesPlayerExist = await Player.findUserBynickname(playernickname)
     if (!doesPlayerExist) {
         return res.status(404).json({
             success: false,
@@ -34,7 +34,7 @@ exports.getSocialAchievements = async (req , res) => {
         })
     }
     try {
-        const socialAchievements = await Achievements.getSocialAchievements(playerNickName)
+        const socialAchievements = await Achievements.getSocialAchievements(playernickname)
        
         res.status(200).json({
             success: true,
@@ -51,7 +51,7 @@ exports.getSocialAchievements = async (req , res) => {
 exports.claimAchievement = async (req , res) => {
     const achievementSlug = req.body.achievementSlug;
     const playerId = req.user.id;
-    const playerNickName = req.user.nickname;
+    const playernickname = req.user.nickname;
     if (!achievementSlug) {
         return res.status(400).json({
             success: false,
@@ -59,7 +59,7 @@ exports.claimAchievement = async (req , res) => {
         })
     }
     try {
-        const achievements = new Achievements(playerId,playerNickName)
+        const achievements = new Achievements(playerId,playernickname)
         const achievementData = await achievements.claimAchievement(achievementSlug)
         if (!achievementData.error) {
             return res.status(200).json({

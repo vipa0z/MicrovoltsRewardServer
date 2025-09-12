@@ -12,7 +12,7 @@ const USERNAME_REGEX = /^[A-Za-z0-9]+$/;
 exports.register = async (req, res) => {
     const username = req.body.username
     const password = req.body.password 
-    const nickname = (req.body.nickname ?? req.body.nickName)?.trim();
+    const nickname = (req.body.nickname ?? req.body.nickname)?.trim();
     if (!username || !password || !nickname) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -40,7 +40,7 @@ exports.register = async (req, res) => {
         if (await Player.checkPlayerAvailability(nickname)) {
             return res.status(400).json({
                 success:false,
-                message: 'Nickname Taken'
+                message: 'nickname Taken'
                 
             })
         }
@@ -65,7 +65,7 @@ exports.registerStaffMember = async (req, res) => {
   
     const username = req.body.username
     const password = req.body.password 
-    const nickname = (req.body.nickname ?? req.body.nickName)?.trim();
+    const nickname = (req.body.nickname ?? req.body.nickname)?.trim();
     const newStaffMemberGrade = req.body.grade
      
     if (!username || !password || !nickname || !newStaffMemberGrade) {
@@ -105,7 +105,7 @@ exports.registerStaffMember = async (req, res) => {
         }
 
         if (await Player.checkPlayerAvailability(nickname)) {
-            return res.status(400).json({ message: 'Nickname Taken' });
+            return res.status(400).json({ message: 'nickname Taken' });
         }
         const hashedPassword =  crypto.createHash('sha256').update(password).digest('hex');
 
@@ -126,6 +126,7 @@ exports.registerStaffMember = async (req, res) => {
 
 // ─────────────── Login ───────────────
 exports.login = async (req, res) => {
+    console.log(req.body)
     const username = req.body.username
     const password = req.body.password 
     if (!username || !password) {

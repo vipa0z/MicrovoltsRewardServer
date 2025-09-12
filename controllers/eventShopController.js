@@ -25,7 +25,7 @@ exports.getEventShop = async (req, res) => {
 exports.purchaseEventItem = async (req, res) => {
     const playerId = req.user.id;
     const itemName = req.body.itemName;
-    const playerNickname = req.user.nickname;
+    const playernickname = req.user.nickname;
     
     if (!playerId) {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -36,7 +36,7 @@ exports.purchaseEventItem = async (req, res) => {
     }
     
     try {
-        const shop = new EventShop(playerId,playerNickname);
+        const shop = new EventShop(playerId,playernickname);
         const result = await shop.buyItem(itemName);
         if (result.success) {
             res.status(200).json({
