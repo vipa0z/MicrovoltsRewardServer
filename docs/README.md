@@ -47,7 +47,7 @@ The server supports the following command-line arguments:
 *   `--create-admin <username> <password>`: Creates an initial admin user.
 *   `--help` or `-h`: Displays the help menu.
 
-See the [Server Configuration](./configuration/README.md) guide for more details.
+See the [Server Configuration](./configuration.md) guide for more details.
 
 ## Scripts
 
