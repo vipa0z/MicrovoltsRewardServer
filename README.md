@@ -1,25 +1,46 @@
 # Microvolts OverVolt: Rewards Server
 
-A recreation of the Previous Microvolts reward systems that restores the functionality of servers like Microvolts Surge and Toyheroes Offline. 
+A recreation of the Previous Microvolts reward systems that restores the functionality of servers like Microvolts Surge and Toyheroes Offline.
 
-## Progress
+
+## Table of Contents
+
+- [Features](#features)
+- [Development Status](#development-status)
+- [Compatibility](#compatibility)
+- [Authentication](#authentication)
+- [Documentation](#documentation)
+
+---
+
+## Features
 
 - **Referral Wheel** (✅ Implemented)
 - **Achievements** (✅ Implemented)
 - **Event Shop** (✅ Implemented)
-- **Rewards per Hours Played** (🔜 Planned)
+- **Rewards per Hours Played** (✅ Implemented)
 - **GUI** (🔜 Planned)
 
 ## Development Status
+The good news is that most of the features I wanted are in here!
 
-This project is currently under active development. the Referral Wheel, and Achievement System are implemented and functional.
+The catch is that I haven't had a chance to write tests for everything yet, so some parts are definitely more stable than others. You might run into some flaky behavior. If you find a bug, please let me know by opening an issue! 
 
-I’m balancing some studies at the moment, so updates might be a bit slow. Thanks for understanding!
+![Microvolts](bea969fced10a14b443c0af9240b566e_w200.gif)
 
 
 ## Compatibility
 - The server is not plug and play yet but can be tested with tools like Postman.
-- uses API requests to the [MicrovoltsEmulator](https://github.com/SoWeBegin/MicrovoltsEmulator)  for rewards. 
+- It is designed to send rewards via API requests to the [MicrovoltsEmulator](https://github.com/SoWeBegin/MicrovoltsEmulator).
+
+
 
 ## Documentation
-Documentation will be provided in a /docs directory once it is ready.
+
+For a complete guide on setup, configuration, and API usage, please see the **[Full User Manual](./docs/README.md)**.
+
+### Quick Navigation
+
+*   **[Server Configuration](./docs/configuration/README.md)**: Learn how to set up your `.env` file, prepare the database, and create an admin user.
+*   **[API Reference](./docs/api-reference/README.md)**: Detailed guides for every API endpoint, including request/response examples.
+*   **[Core Systems](./docs/core-systems/README.md)**: An inside look at how the server handles configuration loading, validation, and in-memory caching.
