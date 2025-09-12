@@ -97,16 +97,7 @@ This command executes the `dbUpdater.js` script, which performs the following ac
 
 2.  **Ensures Player Achievements Table Exists:** It creates the `player_achievements` table if it does not already exist. This table tracks which achievements each player has claimed.
 
-    ```sql
-    CREATE TABLE player_achievements (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        AchievementSlug VARCHAR(50) NOT NULL UNIQUE,
-        AccountId INT NOT NULL,
-        CONSTRAINT fk_user
-            FOREIGN KEY (AccountId) REFERENCES users(AccountID)
-            ON DELETE CASCADE
-    )
-    ```
+
 
 After running successfully, the script will exit. You can then start the server normally.
 
