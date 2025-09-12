@@ -2,7 +2,7 @@
 ## MVO Rewards Server Documentation Overview
 
 The MVO Rewards Server handles various in-game reward mechanisms and administrative tasks.
-```json
+```
     |  \/  | \ \ / /  / _ \  
     | |\/| |  \ V /  | (_) | 
     |_|__|_|  _\_/_   \___/  
