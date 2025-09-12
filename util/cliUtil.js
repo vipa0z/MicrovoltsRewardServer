@@ -25,6 +25,9 @@ Usage:
 Options:
   --populate      Run DB migrations/updates before starting.
   --create-admin  Create initial admin user.
+  --cache-reset   updates the cached itemsinfo file after changing ItemInfo.json.
+  --generate-achievements   runs the generateAchievementData.js script.
+  --generate-chest    runs the generateDailyChestItems.js script.
   --help          Show this help message.
     `);
 }
@@ -55,9 +58,9 @@ async function validateAndLoadConfigs() {
   const skipValidation = process.env.DISABLE_ITEM_VALIDATION === 'true';
   if (skipValidation) {
     logger.warn('SKIP loading itemInfo.json')
-} else {
+  } else {
     await MemoryLoader.loadAndTransformItemsInfo();
-}
+  }
   const categories = ["wheel_items_data", "shop_items_data", "playtime_draw_data", "achievements_data"];
   for (const category of categories) {
     if (!skipValidation) {
