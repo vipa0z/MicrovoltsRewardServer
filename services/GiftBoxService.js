@@ -3,28 +3,33 @@ const axios = require("axios")
 const { getEmuToken } = require('../util/getEmuJwt');
 
 class GiftBox {
-    constructor(Nickname, playerId) {
+    constructor(nickname, playerId) {
 
-        this.playerNickname = Nickname
+        this.playernickname = nickname
         this.playerId =playerId
         this.timestamp = Math.floor(Date.now() / 1000);
         this.emuJWT = process.env.EMU_JWT_SECRET;
         this.emuApiUrl = process.env.EMU_API_URL;
     }
 
-     static async sendReward(reward,playerId, playerNickname, message, sender) {
-      const giftBox = new GiftBox(playerNickname, playerId);
+     static async sendReward(reward, playerId, playernickname, message, sender) {
+      const giftBox = new GiftBox(playernickname, playerId);
       try {
           const result = await giftBox.sendMultipleRewardsToPlayerGiftBoxApi(
               reward.itemId,
-              playerNickname,
+              playernickname,
               message,
               sender,
           );
           if (result.some(r => !r.success)) {
             console.log('failed to send rewards via API, Inserting directly to DB...')
-            await giftBox.sendMultipleRewardsToPlayerGiftBox(reward.itemId, message, sender);          }
-      } catch (error) {
+           return await giftBox.sendMultipleRewardsToPlayerGiftBox(reward, message, sender);          
+        }
+        return result;
+      
+      
+      
+          } catch (error) {
         console.error(error);
         return { error: 'Failed to send reward to player gift box' };
       }
@@ -49,23 +54,29 @@ class GiftBox {
   }
 }
 
-  async sendMultipleRewardsToPlayerGiftBox(itemIds, message, sender) {
-if (!Array.isArray(itemIds)) {
-    itemIds = [itemIds];
+  async sendMultipleRewardsToPlayerGiftBox(reward, message, sender) {
+if (!Array.isArray(reward.itemId)) {
+    reward = [reward.itemId];
 }
     try {
-  const values = itemIds.map(itemId => [itemId, this.timestamp, this.playerId, message, sender]);
+  const values = reward.map(itemId => [itemId, this.timestamp, this.playerId, message, sender]);
     const placeholders = values.map(() => '(?, ?, ?, ?, ?)').join(', ');
   const sql = `
       INSERT INTO giftBox (itemId, timestamp, accountId, message, sender)
       VALUES ${placeholders}
   `;
   const result = await db.query(sql, values.flat());
-    return result;
+    return {
+      success: true,
+      result
+    };
 
   } catch (err) {
       console.error("Failed to insert multiple gift box rewards:", err);
-      return { error: 'Insert failed' };
+      return { 
+        success: false,
+        error: 'Insert failed' 
+      };
   }
 }
 // sending via  EMU API 
@@ -80,7 +91,7 @@ if (!Array.isArray(itemIds)) {
     const response = await axios.post(
       `${process.env.EMU_API_URL}/sendreward`,
       {
-        Nickname: this.playerNickname,
+        nickname: this.playernickname,
         ItemID: String(itemId),
         Message: message,
         Sender: sender
@@ -100,7 +111,7 @@ if (!Array.isArray(itemIds)) {
     };
   }
 }
- async  sendSingleRewardToPlayerGiftBoxApi(itemId, message, sender, playerNickname) {
+ async  sendSingleRewardToPlayerGiftBoxApi(itemId, message, sender, playernickname) {
   try {
     // ✅ Get cached/new token
     const token = getEmuToken();
@@ -108,7 +119,7 @@ if (!Array.isArray(itemIds)) {
     const response = await axios.post(
       `${process.env.EMU_API_URL}/sendreward`,
       {
-        Nickname: playerNickname,
+        nickname: playernickname,
         ItemID: String(itemId),
         Message: message,
         Sender: sender
@@ -135,7 +146,7 @@ if (!Array.isArray(itemIds)) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
- async  sendMultipleRewardsToPlayerGiftBoxApi(itemIds, message, playerNickname) {
+ async  sendMultipleRewardsToPlayerGiftBoxApi(itemIds, message, playernickname) {
   const token = getEmuToken();
   const results = [];
 
@@ -149,7 +160,7 @@ if (!Array.isArray(itemIds)) {
       const res = await axios.post(
         `${process.env.EMU_API_URL}/sendreward`,
         {
-          Nickname: String(playerNickname),
+          nickname: String(playernickname),
           ItemID: String(itemId),
           Message: String(message)
         },

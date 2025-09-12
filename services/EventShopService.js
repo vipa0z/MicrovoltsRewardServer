@@ -43,7 +43,7 @@ class EventShop {
             const result = await GiftBox.sendReward(
                 item,
                 this.playerId,
-                this.playerNickname,
+                this.playernickname,
                 `You purchased ${item.itemName} from the shop.`,
                 'ShopSys');
             

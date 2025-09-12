@@ -4,16 +4,16 @@ const Player = require("../database/Player")
 const GiftBox = require("./GiftBoxService")
 
 class Achievements {
-    constructor(playerId, playerNickName) {
+    constructor(playerId, playernickname) {
         this.playerId = playerId
-        this.playerNickName = playerNickName
+        this.playernickname = playernickname
     }
 
     async getAchievements() {
       const player = await Player.getPlayerById(this.playerId);
       if (!player) throw new Error("Player not found");
   
-      const playerAchievementRows = await this.getPlayerAchievementsDB()
+      const playerAchievementRows = await this.getPlayerAchievements()
   
       // Build lookup for claimed/unlocked achievements
       const playerAchievementMap = new Map();
@@ -81,8 +81,8 @@ class Achievements {
       return evaluatedAchievements;
   }
   
-static async getSocialAchievements(nickName) {
-    const user = await db.query(`SELECT AccountID FROM users WHERE Nickname = ?`, [nickName])
+static async getSocialAchievements(nickname) {
+    const user = await db.query(`SELECT AccountID FROM users WHERE nickname = ?`, [nickname])
     if (!user || user.length === 0) return []
     const accountId = user[0].AccountID || user[0].accountId
     const rows = await db.query(
@@ -136,7 +136,7 @@ async getItemMetadata() {
      return { success: false, message: "Achievement already claimed" };
    }
 
-   const result = await GiftBox.sendReward(achievement.rewards.map(r => r.itemId),'Claim your Achievements rewards', 'AchieveSys',this.playerNickName,this.playerId);
+   const result = await GiftBox.sendReward(achievement.rewards.map(r => r.itemId),'Claim your Achievements rewards', 'AchieveSys',this.playernickname,this.playerId);
 
    await db.query(
     `INSERT INTO player_achievements (accountId, achievementSlug)
@@ -158,7 +158,7 @@ async getItemMetadata() {
   }
 }
 
- async getPlayerAchievementsDB () {
+ async getPlayerAchievements () {
   const rows = await db.query(
     `SELECT * FROM player_achievements WHERE accountId = ?`,
     [this.playerId]
