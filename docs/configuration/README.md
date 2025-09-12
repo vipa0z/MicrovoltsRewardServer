@@ -8,7 +8,7 @@ Here's an organized documentation structure for your MVO Rewards Server, integra
 
 The script menu handles various in-game reward mechanisms and administrative tasks.
 
-```json
+```shell
     |  \/  | \ \ / /  / _ \  
     | |\/| |  \ V /  | (_) | 
     |_|__|_|  _\_/_   \___/  
