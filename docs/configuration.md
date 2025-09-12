@@ -1,14 +1,10 @@
-Here's an organized documentation structure for your MVO Rewards Server, integrating your command-line output and notes. I've aimed for clarity and aesthetics, using Markdown to structure the information.
-
----
-
-# MVO Rewards Server Documentation
 
 ## Overview
 
 The script menu handles various in-game reward mechanisms and administrative tasks.
 
-```
+```text
+
     |  \/  | \ \ / /  / _ \  
     | |\/| |  \ V /  | (_) | 
     |_|__|_|  _\_/_   \___/  
@@ -41,7 +37,29 @@ node server.js [--populate] [--create-admin <username> <password>] [--help]
 
 ## Server Configuration
 
-This guide covers the initial setup and configuration of the MVO Rewards Server.
+This guide covers the initial setup and configuration of the Server.
+
+## Data Files
+The server relies on specific JSON files for item and weapon information. These files are required in the `data/` folder.
+
+> ⚠️ You can use your own custom `itemsInfo.json` and `itemWeaponInfo.json` files by placing them in the `data/` folder and Refresh the cache using `--cache-reset`.  
+
+
+### Required JSON Files
+
+- `itemsInfo.json`
+- `itemWeaponInfo.json`
+
+### Using the Provided Archive
+
+The JSON files are provided in a `.rar` archive within the `data/` folder. To use them:
+
+1. Extract the files from the archive:
+
+```bash
+# Example using unrar (ensure unrar is installed)
+unrar x data/archive.rar data/
+```
 
 ### Environment Variables
 

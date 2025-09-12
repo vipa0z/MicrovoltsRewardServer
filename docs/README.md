@@ -6,14 +6,17 @@ This document serves as a user manual and reference for the MVO Rewards Server. 
 
 ## Detailed Documentation
 
-*   **[Server Configuration](./configuration/README.md)**
+*   **[Server Configuration](./configuration.md)**
     *   Learn about environment variables, database setup (`--populate`), and creating an admin user (`--create-admin`).
 
 *   **[API Reference](./api-reference/README.md)**
-    *   Detailed guides for every API endpoint, including request/response examples.
+    *   Detailed guides for every API endpoint. 
 
-*   **[Core Systems](./core-systems/README.md)**
-    *   An inside look at how the server handles configuration loading, validation, and in-memory caching.
+*   **[Memory Caching](./memory-caching.md)**
+    *   Details about how the server handles in-memory caching.
+
+*   **[Config Loading](./config-loading.md)**
+    *   Details about how the server processes and validates configuration files.
 
 ## Installation
 

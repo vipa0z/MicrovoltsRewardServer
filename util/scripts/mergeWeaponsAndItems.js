@@ -5,7 +5,7 @@ const {logger} = require('../logger');
 async function loadGameData() {
   try {
     // Define file paths
-    const itemsFilePath = path.join(__dirname, '..','..','data', 'iteminfo.json');
+    const itemsFilePath = path.join(__dirname, '..','..','data', 'itemInfo.json');
     const weaponsFilePath = path.join(__dirname,'..','..', 'data', 'itemweaponsInfo.json');
     
     // Load all three files
