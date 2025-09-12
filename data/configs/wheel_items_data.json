@@ -7,6 +7,15 @@
                 1132100,
                 1110151
             ]
+        },
+
+        {
+            "itemName": "Item Placeholder 2",
+            "itemOption": "Speed",
+            "itemId": [
+                1132100,
+                1110151
+            ]
         }
     ]
 }

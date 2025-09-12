@@ -7,8 +7,12 @@ exports.drawWheel = async (req, res) => {
     try {
         const spinResult = await wheel.spin();
         
-        if (!spinResult.error) {
-            return res.status(403).json({...spinResult});
+        if (spinResult.error) {
+            return res.status(200).json({
+                success:false,
+                data:spinResult
+            
+            });
         }
         
         // save log 

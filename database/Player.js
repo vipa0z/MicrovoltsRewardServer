@@ -106,10 +106,10 @@ class Player {
     }
     //wheel
     static async getWheelData(playerId) {
-        const rows = await db.query('SELECT WheelSpinsClaimed,Playtime FROM users WHERE AccountID = ? LIMIT 1', [playerId]);
+        const rows = await db.query('SELECT WheelSpinsClaimed, Playtime FROM users WHERE AccountID = ? LIMIT 1', [playerId]);
         return rows.length > 0 ? {
-            wheelSpinsClaimed: Player.mapUserRow(rows[0]).WheelSpinsClaimed,
-            playtime: Player.mapUserRow(rows[0]).Playtime
+            wheelSpinsClaimed: Player.mapUserRow(rows[0]).wheelSpinsClaimed,
+            playtime: Player.mapUserRow(rows[0]).playtime
         } : null;
     }
 

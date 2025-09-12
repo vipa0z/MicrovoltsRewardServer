@@ -19,7 +19,6 @@ class SpinningWheel {
             throw new Error(`Player not found for AccountID=${this.playerId}`);
         }
 
-
         // Calculate total eligible spins based on playtime, returns a canSpin boolean with either 0/1
 
         // playtime needed in seconds = 160 * 3600 = 576,000
@@ -35,16 +34,17 @@ class SpinningWheel {
             const playtimeNeeded = nextThresholdPlaytime - player.playtime;
             hoursUntilNextSpin = Math.max(0, Math.ceil(playtimeNeeded / 3600));
         }
-        return {
-            canSpin: availableSpins > 0,
-            remainingSpins: availableSpins,
-            hoursUntilNextSpin: hoursUntilNextSpin,
-            totalEligibleSpins: totalEligibleSpins,
-            claimedSpins: Number(player.wheelSpinsClaimed)
-        };
-    }
+        
+            return {
+                canSpin: availableSpins > 0,
+                remainingSpins: availableSpins,
+                hoursUntilNextSpin: hoursUntilNextSpin,
+                totalEligibleSpins: totalEligibleSpins,
+                claimedSpins: Number(player.wheelSpinsClaimed)
+            };
+        }
 
-
+    
     async consumeSpin(updatedClaimedWheelSpins) {
         try {
             await Player.updateSpinsClaimed(this.playerId, updatedClaimedWheelSpins);
@@ -54,7 +54,7 @@ class SpinningWheel {
         }
     }
 
-    drawWheel() { 
+    drawWheel() {
         const itemPool = this.itemPool
         if (!itemPool || itemPool.length === 0) {
             throw new Error("No wheel itemPool configured");
@@ -63,19 +63,12 @@ class SpinningWheel {
         const reward = itemPool[Math.floor(Math.random() * itemPool.length)];
         return reward;
     }
-
-
     async spin() {
         let eligibility = {}
         try {
-            // if environment is development, give unlimited spins
-            if (process.env.ENVIRONMENT == 'development') {
-                eligibility = { canSpin: true, remainingSpins: 5, hoursUntilNextSpin: 0, totalEligibleSpins: 1, claimedSpins: 0 } // gives you unlimited spins(for testing)
-            }
-            else {
-                //  console.log("[DEBUG] Checking eligibility for player",this.playernickname," Environment: ", process.env.ENVIRONMENT)
-                eligibility = await this.checkEligibility()
-            }
+
+            eligibility = await this.checkEligibility()
+            console.log('is eligible?',eligibility.canSpin)
             if (!eligibility.canSpin) {
                 return {
                     error: `You need ${eligibility.hoursUntilNextSpin} more hours to claim a spin`,
