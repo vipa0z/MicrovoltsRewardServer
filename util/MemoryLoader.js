@@ -2,6 +2,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const {logger} = require('./logger');
 const { CATEGORY_CONFIGS } = require('../data/categoryMappings');
+const mergeWeaponsAndItems = require('./scripts/mergeWeaponsAndItems');
 class MemoryLoader {
     static items = {
         wheel_items_data: [],
@@ -10,9 +11,9 @@ class MemoryLoader {
         achievements_data: []
     }
     static allItems = [];
- 
+    
+ // looks for transformed file first, if not found runs mergeWeapons And Items
     static async loadAndTransformItemsInfo() {
-        const rawPath = path.join(__dirname, '..', 'data', 'itemInfo.json');
         const transformedPath = path.join(__dirname, '..', 'data', 'itemInfo.transformed.json');
     
         try {
@@ -22,35 +23,15 @@ class MemoryLoader {
             logger.success(`[MemoryLoader] Loaded ${this.allItems.length} items from transformed file`);
             return this.allItems;
         } catch (err) {
-            // transformed file doesn't exist → process raw
-            const rawData = await fs.readFile(rawPath, 'utf8');
-            const items = JSON.parse(rawData);
-    
-            this.allItems = items.map(item => {
-                const newItem = {};
-                for (const key in item) {
-                    if (key === 'ii_time') newItem.itemDuration = item[key];
-                    else if (key.startsWith('ii_')) {
-                        const camelCasePart = key
-                            .substring(3)
-                            .split('_')
-                            .map(w => w ? w[0].toUpperCase() + w.slice(1) : '')
-                            .join('');
-                        newItem['item' + camelCasePart] = item[key];
-                    } else {
-                        newItem[key] = item[key];
-                    }
-                }
-    
-                // ensure itemId is always an array
-                newItem.itemId = Array.isArray(newItem.itemId) ? newItem.itemId : [newItem.itemId];
-                return newItem;
-            }).filter(item => item && item.itemId && item.itemName); // filter invalid entries
-    
-            // Save transformed version
-            await fs.writeFile(transformedPath, JSON.stringify(this.allItems, null, 4), 'utf8');
-            logger.success(`[MemoryLoader] Transformed and saved ${this.allItems.length} items`);
-    
+            try{
+               await mergeWeaponsAndItems.run();
+               const transformedData = await fs.readFile(transformedPath, 'utf8');
+               this.allItems = JSON.parse(transformedData);
+               logger.success(`[MemoryLoader] Transformed and loaded ${this.allItems.length} items`);
+               return this.allItems;
+            }catch(err){
+                logger.error(`[MemoryLoader] Error transforming items: ${err}`);
+            }
             return this.allItems;
         }
     }

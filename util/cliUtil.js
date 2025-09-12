@@ -37,8 +37,12 @@ function parseCliArgs() {
   return {
     help: args.includes('--help') || args.includes('-h'),
     populate: args.includes('--populate'),
-    createAdmin: args.includes('--create-admin')
-      ? {
+    transformedItemInfoReset: args.includes('--cache-reset'),
+
+    generateAchievementsData: args.includes('--generate-achievements'),
+    generateChestData: args.includes('--generate-chest'),
+    
+    createAdmin: args.includes('--create-admin') ? {
         idx: args.indexOf('--create-admin'),
         username: args[args.indexOf('--create-admin') + 1],
         password: args[args.indexOf('--create-admin') + 2]
