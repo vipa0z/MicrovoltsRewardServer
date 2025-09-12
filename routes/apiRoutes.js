@@ -33,8 +33,9 @@ const registerUserRoutes = () => {
     router.post('/shop/buy', authUser, shopController.purchaseEventItem);
 
     //achievements
-    router.get('/achievements/self', authUser, achievements.getSelfAchievements); // achievements for current user (includes progress/data not shown to other players)
     router.post('/achievements/claim', authUser, achievements.claimAchievement);
+
+    router.get('/achievements/self', authUser, achievements.getSelfAchievements); // achievements for current user (includes progress/data not shown to other players)
     // view other player achievements
     router.get('/achievements/:nickname', authUser, achievements.getSocialAchievements); // claimed only
     
@@ -42,7 +43,7 @@ const registerUserRoutes = () => {
 
     //daily chest
     router.get('/daily-chest/progress', authUser, dailyPlaytimeController.getDailyPlaytimeProgress);
-    router.post('/daily-chest/items', authUser, dailyPlaytimeController.drawDailyPlaytimeReward);
+    router.post('/daily-chest/claim', authUser, dailyPlaytimeController.drawDailyPlaytimeReward);
 
 }
 

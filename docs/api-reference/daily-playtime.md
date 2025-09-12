@@ -27,7 +27,7 @@ Endpoints for the daily playtime reward system.
 
 ### Draw Daily Reward
 
-*   **Endpoint:** `POST /api/daily-chest/draw`
+*   **Endpoint:** `POST /api/daily-chest/claim`
 *   **Authentication:** User
 
 #### Request Body
