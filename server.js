@@ -79,7 +79,16 @@ async function startServer() {
             }
             await require('./util/scripts/dbUpdater').ensureAdminUser(username, password);
         }
+        if (cliArgs.transformedItemInfoReset) {
+            await require('./util/scripts/mergeWeaponsAndItems').run();
+        }
+        if (cliArgs.generateAchievementsData) {
+            await require('./util/scripts/generateAchievementsData').run();
 
+        }
+        if (cliArgs.generateChestData) {
+            await require('./util/scripts/generateDailyChestData').run();
+        }
 
 
         await cliUtil.validateAndLoadConfigs();
