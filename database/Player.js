@@ -20,16 +20,16 @@ class Player {
             totalKills: row.Kills ?? row.kills ?? row.total_kills,
             totalDeaths: row.Deaths ?? row.deaths ?? row.total_deaths,
 
-            meleeKills: row.MeleeKills ?? row.meleeKills ?? row.melee_kills,
-            rifleKills: row.RifleKills ?? row.rifleKills ?? row.rifle_kills,
-            shotgunKills: row.ShotgunKills ?? row.shotgunKills ?? row.shotgun_kills,
-            sniperKills: row.SniperKills ?? row.sniperKills ?? row.sniper_kills,
-            bazookaKills: row.BazookaKills ?? row.bazookaKills ?? row.bazooka_kills,
-            grenadeKills: row.GrenadeLauncherKills ?? row.grenadeLauncherKills ?? row.grenade_launcher_kills,
-            gatlingKills: row.GatlingGunKills ?? row.gatlingGunKills ?? row.gatling_gun_kills,
+            meleeKills: row.MeleeKills,
+            rifleKills: row.RifleKills,
+            shotgunKills: row.ShotgunKills,
+            sniperKills: row.SniperKills,
+            bazookaKills: row.BazookaKills,
+            grenadeKills: row.GrenadeKills,
+            gatlingKills: row.GatlingKills,
 
-            rtSpent: row.RTSpent ?? row.rtSpent ?? row.rt_spent,
-            mpSpent: row.MPSpent ?? row.mpSpent ?? row.mp_spent,
+            rtSpent: row.RTSpent,
+            mpSpent: row.MPSpent,
             twoHoursCounter: row.TwoHoursCounter,
         };
      
@@ -121,16 +121,19 @@ class Player {
                     return rows;
     }
 
-    //achievements
     static async getPlayerAchievements(playerId) {
-        const rows = await db.query('SELECT * FROM player_achievements WHERE accountId = ?', [playerId]);
-        return rows.length > 0 ? Player.mapAchievementRow(rows[0]) : null;
-    }
-    
-    static async updatePlayerAchievements(playerId, achievements) {
         const rows = await db.query(
-                        'UPDATE player_achievements SET achievements = ? WHERE accountId = ? LIMIT 1',
-                        [achievements, playerId]
+          'SELECT * FROM player_achievements WHERE AccountId = ?',
+          [playerId]
+        );
+      
+        return rows
+      }
+    
+    static async updatePlayerAchievements(achievementSlug, playerId) {
+        const rows = await db.query(
+                        'INSERT INTO player_achievements (AchievementSlug, AccountId) VALUES (?, ?)',
+                        [achievementSlug, playerId]
                     );
                     return rows;
     }
@@ -140,7 +143,6 @@ class Player {
     static async getDailyPlaytimeCounter(playerId) { 
         const rows = await db.query('SELECT TwoHoursCounter FROM users WHERE AccountID = ? LIMIT 1', [playerId]);
         const counter = Player.mapUserRow(rows[0]).twoHoursCounter
-        console.log(counter)
         return counter != null ? counter : 0;
     }
     

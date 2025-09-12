@@ -52,3 +52,4 @@ The catch is that I haven't had a chance to write tests for everything yet, so s
 For a complete guide on setup, configuration, and API usage,  see the **[Full User Manual](./docs/README.md)**.
 
 
+  

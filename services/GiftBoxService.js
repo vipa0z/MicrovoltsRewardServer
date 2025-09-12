@@ -5,31 +5,34 @@ const { getEmuToken } = require('../util/getEmuJwt');
 class GiftBox {
     constructor(nickname, playerId) {
 
-        this.playernickname = nickname
+        this.nickname = nickname
         this.playerId =playerId
         this.timestamp = Math.floor(Date.now() / 1000);
         this.emuJWT = process.env.EMU_JWT_SECRET;
         this.emuApiUrl = process.env.EMU_API_URL;
     }
 
-     static async sendReward(reward, playerId, playernickname, message, sender) {
-      const giftBox = new GiftBox(playernickname, playerId);
+     static async sendReward(reward, playerId, nickname, message, sender) {
+      //reward = array of itemId
+      const giftBox = new GiftBox(nickname, playerId);
       try {
+        if (reward.length > 1) {
           const result = await giftBox.sendMultipleRewardsToPlayerGiftBoxApi(
-              reward.itemId,
-              playernickname,
+              reward,
+              nickname,
               message,
               sender,
           );
           if (result.some(r => !r.success)) {
-            console.log('failed to send rewards via API, Inserting directly to DB...')
+            logger.warn('Failed to send rewards via API, Is the emu running? Inserting directly to DB...')
            return await giftBox.sendMultipleRewardsToPlayerGiftBox(reward, message, sender);          
         }
         return result;
       
-      
-      
-          } catch (error) {
+          } 
+          
+        }
+          catch (error) {
         console.error(error);
         return { error: 'Failed to send reward to player gift box' };
       }
@@ -55,30 +58,26 @@ class GiftBox {
 }
 
   async sendMultipleRewardsToPlayerGiftBox(reward, message, sender) {
-if (!Array.isArray(reward.itemId)) {
-    reward = [reward.itemId];
+    console.log(reward)
+if (!Array.isArray(reward)) {
+    reward = [reward];
 }
+for (const itemId of reward) {
     try {
-  const values = reward.map(itemId => [itemId, this.timestamp, this.playerId, message, sender]);
-    const placeholders = values.map(() => '(?, ?, ?, ?, ?)').join(', ');
-  const sql = `
-      INSERT INTO giftBox (itemId, timestamp, accountId, message, sender)
-      VALUES ${placeholders}
-  `;
-  const result = await db.query(sql, values.flat());
-    return {
-      success: true,
-      result
-    };
-
-  } catch (err) {
-      console.error("Failed to insert multiple gift box rewards:", err);
-      return { 
-        success: false,
-        error: 'Insert failed' 
-      };
-  }
+    const result = 
+    await db.query(
+      `INSERT INTO GiftBox (itemId, timestamp, accountId, message, sender) VALUES (?, ?, ?, ?, ?)`,
+      [itemId, this.timestamp, this.playerId, message, sender]
+    );
+    
+    return result
+} catch (error) {
+    console.error(error);
+    return { error: 'Failed to send reward to player gift box' };
 }
+}
+    
+  }
 // sending via  EMU API 
  async sendRewardToPlayerGiftBoxApi(itemId, message, sender) { 
 
@@ -91,7 +90,7 @@ if (!Array.isArray(reward.itemId)) {
     const response = await axios.post(
       `${process.env.EMU_API_URL}/sendreward`,
       {
-        nickname: this.playernickname,
+        nickname: this.nickname,
         ItemID: String(itemId),
         Message: message,
         Sender: sender
@@ -111,7 +110,7 @@ if (!Array.isArray(reward.itemId)) {
     };
   }
 }
- async  sendSingleRewardToPlayerGiftBoxApi(itemId, message, sender, playernickname) {
+ async  sendSingleRewardToPlayerGiftBoxApi(itemId, message, sender, nickname) {
   try {
     // ✅ Get cached/new token
     const token = getEmuToken();
@@ -119,7 +118,7 @@ if (!Array.isArray(reward.itemId)) {
     const response = await axios.post(
       `${process.env.EMU_API_URL}/sendreward`,
       {
-        nickname: playernickname,
+        nickname: nickname,
         ItemID: String(itemId),
         Message: message,
         Sender: sender
@@ -146,7 +145,7 @@ if (!Array.isArray(reward.itemId)) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
- async  sendMultipleRewardsToPlayerGiftBoxApi(itemIds, message, playernickname) {
+ async  sendMultipleRewardsToPlayerGiftBoxApi(itemIds, message, nickname) {
   const token = getEmuToken();
   const results = [];
 
@@ -160,7 +159,7 @@ if (!Array.isArray(reward.itemId)) {
       const res = await axios.post(
         `${process.env.EMU_API_URL}/sendreward`,
         {
-          nickname: String(playernickname),
+          nickname: String(nickname),
           ItemID: String(itemId),
           Message: String(message)
         },

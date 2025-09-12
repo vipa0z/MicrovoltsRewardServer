@@ -103,7 +103,6 @@ Endpoints for viewing and claiming achievements.
         {
           "itemId": 4600001,
           "itemName": "100 MP",
-          "quantity": 1
         }
       ]
     }
@@ -112,5 +111,19 @@ Endpoints for viewing and claiming achievements.
 ```
 
 #### Error Responses
-
-*   **400 Bad Request:** If `achievementSlug` is missing, the achievement is not found, it's not unlocked, or it has already been claimed.
+Requirements not met:
+request: 
+```
+{
+    "achievementSlug": "level-up-104"
+}
+```
+response: 
+```
+{
+    "success": false,
+    "data": {
+        "message": "Requirements not met: level 100/104"
+    }
+}
+```

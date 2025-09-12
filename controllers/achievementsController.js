@@ -58,8 +58,15 @@ exports.claimAchievement = async (req , res) => {
             error: "Missing achievement slug"
         })
     }
+    if (!req.user) {
+        return res.status(401).json({
+            success: false,
+            error: "Unauthorized"
+        })
+    }
     try {
-        const achievements = new Achievements(playerId,playernickname)
+        console.log("Creating Achievements with:", { playerId, playernickname });
+        const achievements = new Achievements(playerId, playernickname)
         const achievementData = await achievements.claimAchievement(achievementSlug)
         if (!achievementData.error) {
             return res.status(200).json({
