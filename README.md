@@ -49,11 +49,6 @@ The catch is that I haven't had a chance to write tests for everything yet, so s
 
 ## Documentation
 
-For a complete guide on setup, configuration, and API usage, please see the **[Full User Manual](./docs/README.md)**.
+For a complete guide on setup, configuration, and API usage,  see the **[Full User Manual](./docs/README.md)**.
 
-### Quick Navigation
-
-*   **[Server Configuration](./docs/configuration/README.md)**: Learn how to set up your `.env` file, prepare the database, and create an admin user.
-*   **[API Reference](./docs/api-reference/README.md)**: Detailed guides for every API endpoint, including request/response examples.
-*   **[Core Systems](./docs/core-systems/README.md)**: An inside look at how the server handles configuration loading, validation, and in-memory caching.
 
